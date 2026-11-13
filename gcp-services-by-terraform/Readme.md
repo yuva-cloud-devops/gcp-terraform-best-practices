@@ -1,17 +1,5 @@
 # Cloud Infrastructure Competency & Terraform Automation Assessment (GCP)
 
-**Assignee:** Yuvaraj K  
-**Target Cloud:** Google Cloud Platform (GCP)  
-**IaC Tool:** Terraform (`hashicorp/google`, `hashicorp/google-beta`)  
-**Status:** Completed / Ready for Verification  
-
----
-
-## Executive Evidence Statement
-
-> *"To satisfy the cloud architecture and core infrastructure verification: I have mapped all 14 core competencies specifically to Google Cloud Platform (GCP). This includes defining the exact GCP native services, demonstrating end-to-end automation capabilities with Terraform (Resource Hierarchy, Multi-Tier IAM, Shared VPC Networking, GKE, Storage, Databases, KMS, and Observability), and documenting the exact architectural boundaries—identifying what can be automated with IaC versus operational prerequisites that require out-of-band management."*
-
----
 
 ## Master Competency & Automation Matrix
 
