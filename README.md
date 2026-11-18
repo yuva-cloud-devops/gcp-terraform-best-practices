@@ -15,6 +15,7 @@ flowchart TD
     Mod2 --> LZ0["0-bootstrap\n(Project & Remote State Setup)"]
     Mod2 --> LZ1["1-foundation-infra\n(Org, Folders, Projects & Tags)"]
     Mod2 --> LZ2["2-network-infra-phase-1\n(Shared VPC, NAT & Firewall Policies)"]
+    Mod2 --> LZ3["2-network-infra-phase-2\n(VPC Peering, PSC, Cloud DNS & HA VPN)"]
 ```
 
 ```text
@@ -48,16 +49,31 @@ gcp-terraform-best-practices/
     │   ├── output.tf                                                # Exported Folder & Project Outputs
     │   └── output.txt                                               # Live State Outputs
     │
-    └── 2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/      # Phase 2: Network Infrastructure Phase 1
-        ├── README.md                                                # Network Infra Phase 1 Documentation
-        ├── network-config.yaml                                      # VPC, Subnets, Routers, NAT & VPC Rules
-        ├── shared_vpc.yaml                                          # Service Project Attachments & Subnet IAM
-        ├── firewalls.yaml                                           # Folder Hierarchical Firewall Policy
-        ├── main.tf                                                  # Multi-Module Composition
-        ├── provider.tf                                              # GCS Remote Backend (prefix = "network-phase-1")
-        ├── output.tf                                                # Network & Policy Outputs
-        ├── output.txt                                               # Live Network State Outputs
-        └── vm-test-output.txt                                       # End-to-End Validation Logs (IAP, NAT, PGA)
+    ├── 2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/      # Phase 2: Network Infrastructure Phase 1
+    │   ├── README.md                                                # Network Infra Phase 1 Documentation
+    │   ├── network-config.yaml                                      # VPC, Subnets, Routers, NAT & VPC Rules
+    │   ├── shared_vpc.yaml                                          # Service Project Attachments & Subnet IAM
+    │   ├── firewalls.yaml                                           # Folder Hierarchical Firewall Policy
+    │   ├── main.tf                                                  # Multi-Module Composition
+    │   ├── provider.tf                                              # GCS Remote Backend (prefix = "network-phase-1")
+    │   ├── output.tf                                                # Network & Policy Outputs
+    │   ├── output.txt                                               # Live Network State Outputs
+    │   └── vm-test-output.txt                                       # End-to-End Validation Logs (IAP, NAT, PGA)
+    │
+    └── 2-network-infra-phase-2-vpc-peering-psc-dns-vpn/             # Phase 3 / Phase 2: Advanced Hybrid Network
+        ├── README.md                                                # Network Infra Phase 2 Documentation
+        ├── network.yaml                                             # Hub & Spoke Multi-VPC Architecture
+        ├── peering.yaml                                             # Bi-Directional VPC Peering Specification
+        ├── dns.yaml                                                 # Cloud DNS Private Zones & Service Discovery
+        ├── psc.yaml                                                 # Private Service Connect (Google APIs)
+        ├── vpn.yaml                                                 # HA Cloud VPN Gateway & Dynamic BGP Routing
+        ├── main.tf                                                  # Multi-Module Orchestration
+        ├── provider.tf                                              # GCP Provider Configuration
+        ├── output.tf                                                # Network, DNS, PSC & VPN Outputs
+        ├── output.txt                                               # Live Phase 2 State Outputs
+        ├── testing.md                                               # Verification Playbook & Commands
+        ├── test-out.txt                                             # Remote StrongSwan VM Setup Logs
+        └── vpn-setup.md                                             # Automated StrongSwan/FRR Configuration Script
 ```
 
 ---
@@ -107,7 +123,7 @@ A modular, scalable, multi-project Landing Zone deployed in progressive phases:
   - `prod-ecommerce-production-lvah` (Prod Workloads)
 - Applies cryptographic resource tags (`environment`, `data_classification`) and creates baseline service accounts.
 
-#### 3. [Phase 2: Network Infrastructure Phase 1](./2-gcp-landing-zone-terraform/2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/README.md)
+#### 3. [Phase 2: Network Infrastructure Phase 1 (Shared VPC)](./2-gcp-landing-zone-terraform/2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/README.md)
 - Provisions enterprise **Shared VPC** (`shared-vpc-vpc`) in the Host Project.
 - Configures regional subnets in `asia-south1` (Dev: `10.20.1.0/24`) and `asia-southeast1` (Prod: `10.30.1.0/24`) with Private Google Access (PGA).
 - Sets up **Cloud Routers** and **Cloud NAT** gateways for private, outbound-only internet connectivity.
@@ -116,6 +132,15 @@ A modular, scalable, multi-project Landing Zone deployed in progressive phases:
   - **Hierarchical Firewall Policy** on folder `core` (Rules: IAP SSH, Deny Public SSH/RDP, Allow Health Checks, Allow RFC1918).
   - **VPC Firewall Rules** for tagged workloads.
 - **End-to-End Live Validation**: Verified via private VM (`test-vm-dev`) confirming IAP tunneling, private IP routing, Cloud NAT egress (`HTTP 200`), and Private Google Access (`HTTP 400 UploadServer`).
+
+#### 4. [Phase 3 / Phase 2: Advanced Hybrid Network (Peering, PSC, DNS & HA VPN)](./2-gcp-landing-zone-terraform/2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md)
+- Deploys multi-region Hub-and-Spoke networks in `yuvaraj-internal-project`:
+  - `vpc-hub` in Mumbai (`10.10.1.0/24`) and `vpc-sub` in Singapore (`10.20.1.0/24`).
+- Configures bi-directional **VPC Network Peering** (`peering-hub-to-sub` / `peering-sub-to-hub`) with custom route export and import enabled.
+- Establishes **Private Service Connect (PSC)** forwarding rule endpoint (`10.10.0.100`) for all Google APIs.
+- Provisions private **Cloud DNS** zones (`internal.corp.com.` and `p.googleapis.com.`) for internal workload and Google API discovery.
+- Sets up **HA Cloud VPN Gateway** (`ha-vpn-hub`) connected via IPsec and dynamic eBGP routing (`169.254.1.0/30`, ASN `65001` <-> `65002`) to a simulated external StrongSwan / FRRouting router (`35.197.151.95`).
+- **End-to-End Live Validation**: Verified cross-VPC ping (~30ms), DNS lookups, Cloud NAT egress, PSC HTTPS queries, and BGP session establishment.
 
 👉 **Read the Landing Zone Guide**: [2-gcp-landing-zone-terraform/README.md](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/2-gcp-landing-zone-terraform/README.md)
 
@@ -135,6 +160,13 @@ A modular, scalable, multi-project Landing Zone deployed in progressive phases:
 | **Shared Network** | VPC / Routing | `shared-vpc-vpc` / `GLOBAL` |
 | **Subnets** | Dev (`asia-south1`) / Prod (`asia-southeast1`) | `10.20.1.0/24` / `10.30.1.0/24` |
 | **Security** | Hierarchical Policy | `secops-mandatory-guardrails` (Associated to `folders/982884613697`) |
+| **Advanced Network Project** | Dedicated Network Project | `yuvaraj-internal-project` |
+| **Hub / Spoke VPCs** | Multi-Region VPCs | `vpc-hub` (Mumbai: `10.10.1.0/24`) / `vpc-sub` (Singapore: `10.20.1.0/24`) |
+| **VPC Peering** | Custom Route Peering | `peering-hub-to-sub` $\leftrightarrow$ `peering-sub-to-hub` (ACTIVE) |
+| **Cloud DNS** | Private Managed Zones | `internal-corp-workloads-zone` (`internal.corp.com.`) & `psc-google-apis-zone` |
+| **Private Service Connect** | Global Google APIs Endpoint | `pscapishub` (`10.10.0.100` targeting `all-apis`) |
+| **HA Cloud VPN** | Hybrid IPsec Gateway | `ha-vpn-hub` (`34.152.106.188`) $\leftrightarrow$ StrongSwan Router (`35.197.151.95`) |
+| **Dynamic Routing** | Cloud Router eBGP | ASN `65001` $\leftrightarrow$ ASN `65002` (BGP IPs: `169.254.1.1` / `169.254.1.2`) |
 
 ---
 

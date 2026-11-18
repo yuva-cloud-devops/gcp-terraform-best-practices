@@ -11,7 +11,7 @@ This repository implements an enterprise-grade, modular **Google Cloud Platform 
 ├── README.md                                                        # Root Landing Zone Architecture & Index
 ├── 0-bootstrap/
 │   ├── 1-IAM-Policy.md                                              # Prerequisites & IAM Permissions
-│   └── 2-bootstrap-project.md                                        # Bootstrap Project, GCS State & Troubleshooting
+│   └── 2-bootstrap-project.md                                       # Bootstrap Project, GCS State & Troubleshooting
 ├── 1-foundation-infra/
 │   ├── README.md                                                    # Foundation Phase: Org, Folders, Projects & Tags
 │   ├── foundation.yaml                                              # Declarative Foundation Specification
@@ -19,16 +19,30 @@ This repository implements an enterprise-grade, modular **Google Cloud Platform 
 │   ├── provider.tf                                                  # GCS Remote Backend (prefix = "foundation")
 │   ├── output.tf                                                    # Folder, Project, and Tag Outputs
 │   └── output.txt                                                   # Live State Outputs
-└── 2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/
-    ├── README.md                                                    # Network Phase 1: Shared VPC, NAT & Firewalls
-    ├── network-config.yaml                                          # VPC, Subnets, Cloud Routers, Cloud NAT & VPC Rules
-    ├── shared_vpc.yaml                                              # Host/Service Attachments & Subnet IAM
-    ├── firewalls.yaml                                               # Folder Hierarchical Firewall Policy
-    ├── main.tf                                                      # Multi-Module Composition
-    ├── provider.tf                                                  # GCS Remote Backend (prefix = "network-phase-1")
-    ├── output.tf                                                    # Network & Security Policy Outputs
-    ├── output.txt                                                   # Live State Network Outputs
-    └── vm-test-output.txt                                           # Live End-to-End Test & Verification Log
+├── 2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/
+│   ├── README.md                                                    # Network Phase 1: Shared VPC, NAT & Firewalls
+│   ├── network-config.yaml                                          # VPC, Subnets, Cloud Routers, Cloud NAT & VPC Rules
+│   ├── shared_vpc.yaml                                              # Host/Service Attachments & Subnet IAM
+│   ├── firewalls.yaml                                               # Folder Hierarchical Firewall Policy
+│   ├── main.tf                                                      # Multi-Module Composition
+│   ├── provider.tf                                                  # GCS Remote Backend (prefix = "network-phase-1")
+│   ├── output.tf                                                    # Network & Security Policy Outputs
+│   ├── output.txt                                                   # Live State Network Outputs
+│   └── vm-test-output.txt                                           # Live End-to-End Test & Verification Log
+└── 2-network-infra-phase-2-vpc-peering-psc-dns-vpn/
+    ├── README.md                                                    # Network Phase 2: Peering, PSC, DNS & HA VPN
+    ├── network.yaml                                                 # Multi-VPC Architecture (Hub & Spoke)
+    ├── peering.yaml                                                 # Bi-Directional VPC Peering Specification
+    ├── dns.yaml                                                     # Cloud DNS Private Zones & Service Discovery
+    ├── psc.yaml                                                     # Private Service Connect (Google APIs)
+    ├── vpn.yaml                                                     # HA Cloud VPN Gateway & BGP Dynamic Routing
+    ├── main.tf                                                      # Multi-Module Orchestration
+    ├── provider.tf                                                  # GCP Provider Configuration
+    ├── output.tf                                                    # Exported Network, DNS, PSC & VPN Outputs
+    ├── output.txt                                                   # Live State Phase 2 Apply Outputs
+    ├── testing.md                                                   # Verification Playbook & Commands
+    ├── test-out.txt                                                 # Remote StrongSwan VM Setup Logs
+    └── vpn-setup.md                                                 # Complete Automated StrongSwan/FRR Script
 ```
 
 ---
@@ -62,7 +76,7 @@ flowchart TD
         FolderProd --> ProjProd
     end
 
-    subgraph NetworkLayer["Phase 2: Network Infrastructure Phase 1"]
+    subgraph NetworkPhase1["Phase 2: Network Infrastructure Phase 1 (Shared VPC)"]
         VPC["Shared VPC: shared-vpc-vpc (Global)"]
         SubnetDev["Subnet: private-subnet-development\n10.20.1.0/24 (asia-south1)"]
         SubnetProd["Subnet: private-subnet-production\n10.30.1.0/24 (asia-southeast1)"]
@@ -78,7 +92,23 @@ flowchart TD
         ProjProd -.->|Attached Service Project| SubnetProd
     end
 
-    BootstrapLayer --> FoundationLayer --> NetworkLayer
+    subgraph NetworkPhase2["Phase 3 / Phase 2: Advanced Hybrid Network (Peering, DNS, PSC & HA VPN)"]
+        HubVPC["Hub VPC: vpc-hub\n10.10.1.0/24 (Mumbai)"]
+        SubVPC["Spoke VPC: vpc-sub\n10.20.1.0/24 (Singapore)"]
+        CloudDNS["Private Cloud DNS\ninternal.corp.com & p.googleapis.com"]
+        PSC["Private Service Connect\n10.10.0.100 (Google APIs)"]
+        HAVPN["HA Cloud VPN Gateway\nha-vpn-hub (Interface 0: 34.152.106.188)"]
+        RemoteGW["Remote StrongSwan Router\nPublic IP: 35.197.151.95 (BGP ASN 65002)"]
+
+        HubVPC <===>|"Bi-directional VPC Peering\n(Custom Route Export/Import)"| SubVPC
+        CloudDNS -.-> HubVPC & SubVPC
+        HubVPC --- PSC
+        HubVPC --- HAVPN
+        HAVPN <===>|"IPsec Tunnel & eBGP\n(169.254.1.1/30 <-> 169.254.1.2/30)"| RemoteGW
+    end
+
+    BootstrapLayer --> FoundationLayer --> NetworkPhase1
+    FoundationLayer --> NetworkPhase2
 ```
 
 ---
@@ -98,6 +128,12 @@ flowchart TD
 | **Dev Subnet** | `private-subnet-development` | `10.20.1.0/24` (PGA Enabled, `asia-south1`) |
 | **Prod Subnet** | `private-subnet-production` | `10.30.1.0/24` (PGA Enabled, `asia-southeast1`) |
 | **Hierarchical Firewall Policy** | `secops-mandatory-guardrails` | Associated to `folders/982884613697` |
+| **Advanced Network Project** | `yuvaraj-internal-project` | Multi-VPC Hub & Spoke target environment |
+| **Hub / Spoke VPCs** | `vpc-hub` / `vpc-sub` | Mumbai (`10.10.1.0/24`) / Singapore (`10.20.1.0/24`) |
+| **VPC Peering** | `peering-hub-to-sub` / `peering-sub-to-hub` | Bidirectional peering with custom route exchange (`ACTIVE`) |
+| **Cloud DNS Zones** | `internal-corp-workloads-zone` / `psc-google-apis-zone` | `internal.corp.com.` & `p.googleapis.com.` |
+| **Private Service Connect**| `pscapishub` | Forwarding rule endpoint `10.10.0.100` (`all-apis`) |
+| **HA Cloud VPN** | `ha-vpn-hub` | Mumbai gateway (`34.152.106.188`) $\to$ StrongSwan (`35.197.151.95`) |
 
 ---
 
@@ -119,7 +155,7 @@ terraform plan
 terraform apply
 ```
 
-### [Phase 2: Network Infrastructure Phase 1](./2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/README.md)
+### [Phase 2: Network Infrastructure Phase 1 (Shared VPC)](./2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/README.md)
 * Detailed guide: [`2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/README.md`](./2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/README.md)
 * Provisions the Shared VPC in `core-network-host-crk2`, creates regional subnets, sets up Cloud NAT for private internet egress, attaches service projects, delegates subnet IAM, and applies hierarchical security policies.
 
@@ -130,20 +166,46 @@ terraform plan
 terraform apply
 ```
 
+### [Phase 2 (Advanced): Network Infrastructure Phase 2 (VPC Peering, PSC, DNS & HA VPN)](./2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md)
+* Detailed guide: [`2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md`](./2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md)
+* Provisions Hub-and-Spoke networks (`vpc-hub` and `vpc-sub`), bi-directional VPC Peering with custom route exchange, Private Service Connect (PSC) endpoint for Google APIs (`10.10.0.100`), private Cloud DNS managed zones, and Google Cloud HA VPN Gateway connected to an on-premises StrongSwan / FRRouting router with eBGP dynamic routing.
+
+```powershell
+cd 2-network-infra-phase-2-vpc-peering-psc-dns-vpn
+terraform init
+terraform plan
+terraform apply
+```
+
 ---
 
 ## End-to-End Verification & Validation
 
-The network infrastructure was tested and verified using a private Compute Engine instance (`test-vm-dev`) deployed in the service project `dev-ecommerce-devlopment-dp2w` attached to the Host Project's Shared VPC:
+### Phase 1 Shared VPC Validation
+Tested via private Compute Engine instance (`test-vm-dev`) in service project `dev-ecommerce-devlopment-dp2w`:
 
-| Test Case | Command | Result | Verification Status |
+| Test Case | Command | Result | Status |
 | :--- | :--- | :--- | :--- |
 | **IAP SSH Tunneling** | `gcloud compute ssh test-vm-dev --tunnel-through-iap` | Connected to private VM without public IP | **PASSED** |
 | **Shared Subnet Allocation** | `ip -4 addr show ens4` | IP assigned from `10.20.1.0/24` (`10.20.1.2`) | **PASSED** |
 | **Cloud NAT Egress** | `curl -I https://www.google.com` | `HTTP/2 200` via Cloud NAT | **PASSED** |
 | **Private Google Access** | `curl -I https://storage.googleapis.com` | Reached Google API backend without internet | **PASSED** |
 
-Full verification logs are documented in [`2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/vm-test-output.txt`](./2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/vm-test-output.txt).
+### Phase 2 Advanced Network Validation
+Tested via test instances (`vm-hub` and `vm-sub`) and StrongSwan remote edge router:
+
+| Test Case | Command | Result | Status |
+| :--- | :--- | :--- | :--- |
+| **Cross-VPC Peering** | `ping -c 4 10.20.1.2` (from `vm-hub` to `vm-sub`) | ~30ms latency across regions over private backbone | **PASSED** |
+| **Cloud DNS Resolution** | `nslookup app.internal.corp.com` | Resolved to `10.10.1.10` via internal Cloud DNS resolver | **PASSED** |
+| **PSC Google API DNS** | `nslookup storage.p.googleapis.com` | Resolved to PSC endpoint `10.10.0.100` | **PASSED** |
+| **PSC HTTPS Reachability**| `curl -I https://storage.p.googleapis.com` | HTTP response from Google internal frontend over PSC | **PASSED** |
+| **HA Cloud VPN & BGP** | `vtysh -c "show ip bgp summary"` on remote router | BGP session ESTABLISHED with Cloud Router (ASN 65001) | **PASSED** |
+
+Full verification logs are documented in:
+* [`2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/vm-test-output.txt`](./2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/vm-test-output.txt)
+* [`2-network-infra-phase-2-vpc-peering-psc-dns-vpn/testing.md`](./2-network-infra-phase-2-vpc-peering-psc-dns-vpn/testing.md)
+* [`2-network-infra-phase-2-vpc-peering-psc-dns-vpn/output.txt`](./2-network-infra-phase-2-vpc-peering-psc-dns-vpn/output.txt)
 
 ---
 
