@@ -1,0 +1,74 @@
+project_id: yuvaraj-internal-project
+
+zones:
+  # ============================================================================
+  # Private Authoritative Zone for Internal Workloads
+  # ============================================================================
+  - name: "internal-corp-workloads-zone"
+    dns_name: "internal.corp.com."
+    description: "Private internal DNS zone for service discovery"
+    type: "private"
+
+    records:
+      # Example: A-record for a hub service
+      - name: "app"
+        type: "A"
+        ttl: 300
+        rrdatas:
+          - "10.10.1.10"
+
+      # Example: A-record for a database in the sub/spoke network
+      - name: "db"
+        type: "A"
+        ttl: 300
+        rrdatas:
+          - "10.20.1.10"
+
+      # Example: CNAME record
+      - name: "web"
+        type: "CNAME"
+        ttl: 300
+        rrdatas:
+          - "app.internal.corp.com."
+
+  # ============================================================================
+  # Private DNS Zone for Private Service Connect (Google APIs)
+  # Resolves *.p.googleapis.com to the internal PSC endpoint (10.10.0.100)
+  # ============================================================================
+  - name: "psc-google-apis-zone"
+    dns_name: "p.googleapis.com."
+    description: "Private DNS zone for Google APIs Private Service Connect (PSC)"
+    type: "private"
+
+    records:
+      # Apex domain pointing directly to PSC IP
+      - name: "@"
+        type: "A"
+        ttl: 300
+        rrdatas:
+          - "10.10.0.100"
+
+      # Wildcard mapping *.p.googleapis.com -> p.googleapis.com.
+      - name: "*"
+        type: "CNAME"
+        ttl: 300
+        rrdatas:
+          - "p.googleapis.com."
+
+  # # ============================================================================
+  # # (Optional / Recommended) Transparent Google APIs Override Zone
+  # # Allows standard client libraries (e.g., storage.googleapis.com) to
+  # # automatically route to the PSC endpoint without modifying code/SDK endpoints.
+  # # ============================================================================
+  # - name: "psc-google-apis-override-zone"
+  #   dns_name: "googleapis.com."
+  #   description: "Intercepts *.googleapis.com and redirects to p.googleapis.com via CNAME"
+  #   type: "private"
+
+  #   records:
+  #     # Wildcard mapping *.googleapis.com -> p.googleapis.com.
+  #     - name: "*"
+  #       type: "CNAME"
+  #       ttl: 300
+  #       rrdatas:
+  #         - "p.googleapis.com."

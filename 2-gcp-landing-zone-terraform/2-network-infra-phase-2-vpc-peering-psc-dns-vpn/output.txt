@@ -1,0 +1,627 @@
+Outputs:
+
+all_peerings = {
+  "peering-hub-to-sub" = {
+    "direction" = "local-to-peer"
+    "id" = "vpc-hub/peering-hub-to-sub"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "peer_network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "state" = "ACTIVE"
+    "state_details" = "[2026-11-17T23:30:20.777-08:00]: Connected."
+  }
+  "peering-hub-to-sub-reverse" = {
+    "direction" = "peer-to-local"
+    "id" = "vpc-sub/peering-sub-to-hub"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "peer_network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "state" = "ACTIVE"
+    "state_details" = "[2026-11-17T23:30:20.777-08:00]: Connected."
+  }
+}
+external_gateways = {
+  "peer-strongswan-router" = {
+    "id" = "projects/yuvaraj-internal-project/global/externalVpnGateways/peer-strongswan-router"
+    "interfaces" = tolist([
+      {
+        "id" = 0
+        "ip_address" = "35.197.151.95"
+        "ipv6_address" = ""
+      },
+    ])
+    "name" = "peer-strongswan-router"
+    "redundancy_type" = "SINGLE_IP_INTERNALLY_REDUNDANT"
+  }
+}
+firewall_summary = {
+  "hub-allow-iap-ssh" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([
+          "22",
+        ])
+        "protocol" = "tcp"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([])
+    "direction" = "INGRESS"
+    "disabled" = false
+    "id" = "projects/yuvaraj-internal-project/global/firewalls/hub-allow-iap-ssh"
+    "log_config" = tolist([])
+    "name" = "hub-allow-iap-ssh"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/firewalls/hub-allow-iap-ssh"
+    "source_ranges" = toset([
+      "35.235.240.0/20",
+    ])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([
+      "allow-iap-ssh",
+    ])
+    "vpc_name" = "vpc-hub"
+  }
+  "hub-allow-internal" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([])
+        "protocol" = "all"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([])
+    "direction" = "INGRESS"
+    "disabled" = false
+    "id" = "projects/yuvaraj-internal-project/global/firewalls/hub-allow-internal"
+    "log_config" = tolist([])
+    "name" = "hub-allow-internal"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/firewalls/hub-allow-internal"
+    "source_ranges" = toset([
+      "10.0.0.0/8",
+    ])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([])
+    "vpc_name" = "vpc-hub"
+  }
+  "hub-allow-internet" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([
+          "80",
+          "443",
+        ])
+        "protocol" = "tcp"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([
+      "0.0.0.0/0",
+    ])
+    "direction" = "EGRESS"
+    "disabled" = false
+    "id" = "projects/yuvaraj-internal-project/global/firewalls/hub-allow-internet"
+    "log_config" = tolist([])
+    "name" = "hub-allow-internet"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/firewalls/hub-allow-internet"
+    "source_ranges" = toset([])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([])
+    "vpc_name" = "vpc-hub"
+  }
+  "sub-allow-iap-ssh" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([
+          "22",
+        ])
+        "protocol" = "tcp"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([])
+    "direction" = "INGRESS"
+    "disabled" = false
+    "id" = "projects/yuvaraj-internal-project/global/firewalls/sub-allow-iap-ssh"
+    "log_config" = tolist([])
+    "name" = "sub-allow-iap-ssh"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/firewalls/sub-allow-iap-ssh"
+    "source_ranges" = toset([
+      "35.235.240.0/20",
+    ])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([
+      "allow-iap-ssh",
+    ])
+    "vpc_name" = "vpc-sub"
+  }
+  "sub-allow-internal" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([])
+        "protocol" = "all"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([])
+    "direction" = "INGRESS"
+    "disabled" = false
+    "id" = "projects/yuvaraj-internal-project/global/firewalls/sub-allow-internal"
+    "log_config" = tolist([])
+    "name" = "sub-allow-internal"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/firewalls/sub-allow-internal"
+    "source_ranges" = toset([
+      "10.0.0.0/8",
+    ])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([])
+    "vpc_name" = "vpc-sub"
+  }
+  "sub-allow-internet" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([
+          "80",
+          "443",
+        ])
+        "protocol" = "tcp"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([
+      "0.0.0.0/0",
+    ])
+    "direction" = "EGRESS"
+    "disabled" = false
+    "id" = "projects/yuvaraj-internal-project/global/firewalls/sub-allow-internet"
+    "log_config" = tolist([])
+    "name" = "sub-allow-internet"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/firewalls/sub-allow-internet"
+    "source_ranges" = toset([])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([])
+    "vpc_name" = "vpc-sub"
+  }
+}
+gateway_public_ips = {
+  "ha-vpn-hub" = {
+    "interface_0_ip" = "34.152.106.188"
+    "interface_1_ip" = "34.177.35.104"
+  }
+}
+gateways = {
+  "ha-vpn-hub" = {
+    "id" = "projects/yuvaraj-internal-project/regions/asia-south1/vpnGateways/ha-vpn-hub"
+    "name" = "ha-vpn-hub"
+    "region" = "asia-south1"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/regions/asia-south1/vpnGateways/ha-vpn-hub"
+    "vpn_interfaces" = tolist([
+      {
+        "id" = 0
+        "interconnect_attachment" = ""
+        "ip_address" = "34.152.106.188"
+      },
+      {
+        "id" = 1
+        "interconnect_attachment" = ""
+        "ip_address" = "34.177.35.104"
+      },
+    ])
+  }
+}
+google_apis_endpoints = {
+  "pscapishub" = {
+    "forwarding_rule" = "projects/yuvaraj-internal-project/global/forwardingRules/pscapishub"
+    "ip_address" = "10.10.0.100"
+    "ip_address_id" = "projects/yuvaraj-internal-project/global/addresses/pscapishub-ip"
+    "name" = "pscapishub"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/forwardingRules/pscapishub"
+    "target" = "all-apis"
+  }
+}
+google_apis_ips = {
+  "pscapishub" = "10.10.0.100"
+}
+local_peerings = {
+  "peering-hub-to-sub" = {
+    "export_custom_routes" = true
+    "export_subnet_routes_with_public_ip" = false
+    "id" = "vpc-hub/peering-hub-to-sub"
+    "import_custom_routes" = true
+    "import_subnet_routes_with_public_ip" = false
+    "name" = "peering-hub-to-sub"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "peer_network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "stack_type" = "IPV4_ONLY"
+    "state" = "ACTIVE"
+    "state_details" = "[2026-11-17T23:30:20.777-08:00]: Connected."
+  }
+}
+managed_zones = {
+  "internal-corp-workloads-zone" = {
+    "cloud_logging_config" = tolist([
+      {
+        "enable_logging" = false
+      },
+    ])
+    "creation_time" = "2026-11-18T08:00:56.232Z"
+    "description" = "Private internal DNS zone for service discovery"
+    "dns_name" = "internal.corp.com."
+    "dnssec_config" = tolist([])
+    "effective_labels" = tomap({
+      "goog-terraform-provisioned" = "true"
+    })
+    "force_destroy" = false
+    "forwarding_config" = tolist([])
+    "id" = "projects/yuvaraj-internal-project/managedZones/internal-corp-workloads-zone"
+    "labels" = tomap({})
+    "managed_zone_id" = 4703135457091878405
+    "name" = "internal-corp-workloads-zone"
+    "name_servers" = tolist([
+      "ns-gcp-private.googledomains.com.",
+    ])
+    "peering_config" = tolist([])
+    "private_visibility_config" = tolist([
+      {
+        "gke_clusters" = tolist([])
+        "networks" = toset([
+          {
+            "network_url" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+          },
+          {
+            "network_url" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+          },
+        ])
+      },
+    ])
+    "project" = "yuvaraj-internal-project"
+    "terraform_labels" = tomap({
+      "goog-terraform-provisioned" = "true"
+    })
+    "timeouts" = null /* object */
+    "visibility" = "private"
+  }
+  "psc-google-apis-zone" = {
+    "cloud_logging_config" = tolist([
+      {
+        "enable_logging" = false
+      },
+    ])
+    "creation_time" = "2026-11-18T08:33:50.362Z"
+    "description" = "Private DNS zone for Google APIs Private Service Connect (PSC)"
+    "dns_name" = "p.googleapis.com."
+    "dnssec_config" = tolist([])
+    "effective_labels" = tomap({
+      "goog-terraform-provisioned" = "true"
+    })
+    "force_destroy" = false
+    "forwarding_config" = tolist([])
+    "id" = "projects/yuvaraj-internal-project/managedZones/psc-google-apis-zone"
+    "labels" = tomap({})
+    "managed_zone_id" = 4731376030294452579
+    "name" = "psc-google-apis-zone"
+    "name_servers" = tolist([
+      "ns-gcp-private.googledomains.com.",
+    ])
+    "peering_config" = tolist([])
+    "private_visibility_config" = tolist([
+      {
+        "gke_clusters" = tolist([])
+        "networks" = toset([
+          {
+            "network_url" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+          },
+          {
+            "network_url" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+          },
+        ])
+      },
+    ])
+    "project" = "yuvaraj-internal-project"
+    "terraform_labels" = tomap({
+      "goog-terraform-provisioned" = "true"
+    })
+    "timeouts" = null /* object */
+    "visibility" = "private"
+  }
+}
+name_servers = {
+  "internal-corp-workloads-zone" = tolist([
+    "ns-gcp-private.googledomains.com.",
+  ])
+  "psc-google-apis-zone" = tolist([
+    "ns-gcp-private.googledomains.com.",
+  ])
+}
+nat_summary = {
+  "nat-hub" = {
+    "enable_dynamic_port_allocation" = false
+    "enable_endpoint_independent_mapping" = false
+    "id" = "yuvaraj-internal-project/asia-south1/router-hub/nat-hub"
+    "log_config" = tolist([
+      {
+        "enable" = true
+        "filter" = "ERRORS_ONLY"
+      },
+    ])
+    "max_ports_per_vm" = 0
+    "min_ports_per_vm" = 64
+    "name" = "nat-hub"
+    "nat_ip_allocate_option" = "AUTO_ONLY"
+    "nat_ips" = toset([])
+    "region" = "asia-south1"
+    "router" = "router-hub"
+    "source_subnetwork_ip_ranges_to_nat" = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+    "vpc_name" = "vpc-hub"
+  }
+  "nat-sub" = {
+    "enable_dynamic_port_allocation" = false
+    "enable_endpoint_independent_mapping" = false
+    "id" = "yuvaraj-internal-project/asia-southeast1/router-sub/nat-sub"
+    "log_config" = tolist([
+      {
+        "enable" = true
+        "filter" = "ERRORS_ONLY"
+      },
+    ])
+    "max_ports_per_vm" = 0
+    "min_ports_per_vm" = 64
+    "name" = "nat-sub"
+    "nat_ip_allocate_option" = "AUTO_ONLY"
+    "nat_ips" = toset([])
+    "region" = "asia-southeast1"
+    "router" = "router-sub"
+    "source_subnetwork_ip_ranges_to_nat" = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+    "vpc_name" = "vpc-sub"
+  }
+}
+peering_states = {
+  "peering-hub-to-sub" = "ACTIVE"
+  "peering-hub-to-sub-reverse" = "ACTIVE"
+}
+private_service_access_connections = {}
+private_service_access_ranges = {}
+records = {
+  "internal-corp-workloads-zone/A/app" = {
+    "id" = "projects/yuvaraj-internal-project/managedZones/internal-corp-workloads-zone/rrsets/app.internal.corp.com./A"
+    "managed_zone" = "internal-corp-workloads-zone"
+    "name" = "app.internal.corp.com."
+    "project" = "yuvaraj-internal-project"
+    "routing_policy" = tolist([])
+    "rrdatas" = tolist([
+      "10.10.1.10",
+    ])
+    "ttl" = 300
+    "type" = "A"
+  }
+  "internal-corp-workloads-zone/A/db" = {
+    "id" = "projects/yuvaraj-internal-project/managedZones/internal-corp-workloads-zone/rrsets/db.internal.corp.com./A"
+    "managed_zone" = "internal-corp-workloads-zone"
+    "name" = "db.internal.corp.com."
+    "project" = "yuvaraj-internal-project"
+    "routing_policy" = tolist([])
+    "rrdatas" = tolist([
+      "10.20.1.10",
+    ])
+    "ttl" = 300
+    "type" = "A"
+  }
+  "internal-corp-workloads-zone/CNAME/web" = {
+    "id" = "projects/yuvaraj-internal-project/managedZones/internal-corp-workloads-zone/rrsets/web.internal.corp.com./CNAME"
+    "managed_zone" = "internal-corp-workloads-zone"
+    "name" = "web.internal.corp.com."
+    "project" = "yuvaraj-internal-project"
+    "routing_policy" = tolist([])
+    "rrdatas" = tolist([
+      "app.internal.corp.com.",
+    ])
+    "ttl" = 300
+    "type" = "CNAME"
+  }
+  "psc-google-apis-zone/A/@" = {
+    "id" = "projects/yuvaraj-internal-project/managedZones/psc-google-apis-zone/rrsets/p.googleapis.com./A"
+    "managed_zone" = "psc-google-apis-zone"
+    "name" = "p.googleapis.com."
+    "project" = "yuvaraj-internal-project"
+    "routing_policy" = tolist([])
+    "rrdatas" = tolist([
+      "10.10.0.100",
+    ])
+    "ttl" = 300
+    "type" = "A"
+  }
+  "psc-google-apis-zone/CNAME/wildcard" = {
+    "id" = "projects/yuvaraj-internal-project/managedZones/psc-google-apis-zone/rrsets/*.p.googleapis.com./CNAME"
+    "managed_zone" = "psc-google-apis-zone"
+    "name" = "*.p.googleapis.com."
+    "project" = "yuvaraj-internal-project"
+    "routing_policy" = tolist([])
+    "rrdatas" = tolist([
+      "p.googleapis.com.",
+    ])
+    "ttl" = 300
+    "type" = "CNAME"
+  }
+}
+reverse_peerings = {
+  "peering-hub-to-sub" = {
+    "export_custom_routes" = true
+    "export_subnet_routes_with_public_ip" = false
+    "id" = "vpc-sub/peering-sub-to-hub"
+    "import_custom_routes" = true
+    "import_subnet_routes_with_public_ip" = false
+    "name" = "peering-sub-to-hub"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "peer_network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "stack_type" = "IPV4_ONLY"
+    "state" = "ACTIVE"
+    "state_details" = "[2026-11-17T23:30:20.777-08:00]: Connected."
+  }
+}
+router_interfaces = {
+  "ha-vpn-hub-tunnel-0" = {
+    "ip_range" = "169.254.1.1/30"
+    "name" = "ha-vpn-hub-tunnel-0-if"
+    "region" = "asia-south1"
+    "router" = "router-hub"
+    "vpn_tunnel" = "ha-vpn-hub-tunnel-0"
+  }
+}
+router_peers = {
+  "ha-vpn-hub-tunnel-0" = {
+    "advertised_route_priority" = 100
+    "interface" = "ha-vpn-hub-tunnel-0-if"
+    "name" = "ha-vpn-hub-tunnel-0-peer"
+    "peer_asn" = 65002
+    "peer_ip_address" = "169.254.1.2"
+    "region" = "asia-south1"
+    "router" = "router-hub"
+  }
+}
+router_summary = {
+  "router-hub" = {
+    "bgp" = tolist([
+      {
+        "advertise_mode" = "DEFAULT"
+        "advertised_groups" = tolist([])
+        "advertised_ip_ranges" = tolist([])
+        "asn" = 65001
+        "identifier_range" = ""
+        "keepalive_interval" = 20
+      },
+    ])
+    "encrypted_interconnect_router" = false
+    "id" = "projects/yuvaraj-internal-project/regions/asia-south1/routers/router-hub"
+    "name" = "router-hub"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "region" = "asia-south1"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/regions/asia-south1/routers/router-hub"
+    "vpc_name" = "vpc-hub"
+  }
+  "router-sub" = {
+    "bgp" = tolist([
+      {
+        "advertise_mode" = "DEFAULT"
+        "advertised_groups" = tolist([])
+        "advertised_ip_ranges" = tolist([])
+        "asn" = 65002
+        "identifier_range" = ""
+        "keepalive_interval" = 20
+      },
+    ])
+    "encrypted_interconnect_router" = false
+    "id" = "projects/yuvaraj-internal-project/regions/asia-southeast1/routers/router-sub"
+    "name" = "router-sub"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "region" = "asia-southeast1"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/regions/asia-southeast1/routers/router-sub"
+    "vpc_name" = "vpc-sub"
+  }
+}
+service_attachment_endpoints = {}
+service_attachment_ips = {}
+subnet_summary = {
+  "subnet-hub" = {
+    "gateway_address" = "10.10.1.1"
+    "id" = "projects/yuvaraj-internal-project/regions/asia-south1/subnetworks/subnet-hub"
+    "ip_cidr_range" = "10.10.1.0/24"
+    "name" = "subnet-hub"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "private_ip_google_access" = true
+    "purpose" = "PRIVATE"
+    "region" = "asia-south1"
+    "role" = ""
+    "secondary_ip_ranges" = tolist([])
+    "secondary_ranges_map" = {}
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/regions/asia-south1/subnetworks/subnet-hub"
+    "vpc_name" = "vpc-hub"
+  }
+  "subnet-sub" = {
+    "gateway_address" = "10.20.1.1"
+    "id" = "projects/yuvaraj-internal-project/regions/asia-southeast1/subnetworks/subnet-sub"
+    "ip_cidr_range" = "10.20.1.0/24"
+    "name" = "subnet-sub"
+    "network" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "private_ip_google_access" = true
+    "purpose" = "PRIVATE"
+    "region" = "asia-southeast1"
+    "role" = ""
+    "secondary_ip_ranges" = tolist([])
+    "secondary_ranges_map" = {}
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/regions/asia-southeast1/subnetworks/subnet-sub"
+    "vpc_name" = "vpc-sub"
+  }
+}
+total_google_apis_endpoints = 1
+total_peerings_count = 2
+total_records_count = 5
+total_service_attachment_endpoints = 0
+total_tunnels_count = 1
+total_zones_count = 2
+tunnel_ids = {
+  "ha-vpn-hub-tunnel-0" = "projects/yuvaraj-internal-project/regions/asia-south1/vpnTunnels/ha-vpn-hub-tunnel-0"
+}
+tunnels = {
+  "ha-vpn-hub-tunnel-0" = {
+    "detailed_status" = "Initial handshake"
+    "id" = "projects/yuvaraj-internal-project/regions/asia-south1/vpnTunnels/ha-vpn-hub-tunnel-0"
+    "name" = "ha-vpn-hub-tunnel-0"
+    "peer_external_gateway" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/externalVpnGateways/peer-strongswan-router"
+    "peer_external_gateway_interface" = 0
+    "region" = "asia-south1"
+    "vpn_gateway" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/regions/asia-south1/vpnGateways/ha-vpn-hub"
+    "vpn_gateway_interface" = 0
+  }
+}
+vpc_summary = {
+  "vpc-hub" = {
+    "delete_default_routes_on_create" = false
+    "gateway_ipv4" = ""
+    "id" = "projects/yuvaraj-internal-project/global/networks/vpc-hub"
+    "mtu" = 0
+    "name" = "vpc-hub"
+    "routing_mode" = "GLOBAL"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-hub"
+  }
+  "vpc-sub" = {
+    "delete_default_routes_on_create" = false
+    "gateway_ipv4" = ""
+    "id" = "projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    "mtu" = 0
+    "name" = "vpc-sub"
+    "routing_mode" = "GLOBAL"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/networks/vpc-sub"
+  }
+}
+zone_dns_names = {
+  "internal-corp-workloads-zone" = "internal.corp.com."
+  "psc-google-apis-zone" = "p.googleapis.com."
+}
+PS D:\GCP-DevOps-WorkSpace\gcp-terraform-best-practices\2-gcp-landing-zone-terraform\2-network-infra-phase-2-vpc-peering-psc-dns-vpn>

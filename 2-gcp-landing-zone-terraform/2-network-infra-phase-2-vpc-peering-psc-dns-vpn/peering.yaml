@@ -1,0 +1,22 @@
+# ==============================================================================
+# VPC NETWORK PEERINGS CONFIGURATION
+# ==============================================================================
+# Declares peering relationships between VPC networks.
+# Supports automated bi-directional handshakes and external partner peerings.
+# ==============================================================================
+
+# local_network_self_link: "projects/yuvaraj-internal-project/global/networks/vpc-hub"
+
+peerings:
+  # ----------------------------------------------------------------------------
+  # Bi-directional peering (vpc-hub <--> vpc-sub)
+  # Automatically provisions the return connection for instant ACTIVE status.
+  # ----------------------------------------------------------------------------
+  - name: "peering-hub-to-sub"
+    reverse_name: "peering-sub-to-hub"
+    # peer_network_self_link: "projects/yuvaraj-internal-project/global/networks/vpc-sub"
+    auto_create_reverse_peering: true
+    export_custom_routes: true
+    import_custom_routes: true
+    export_subnet_routes_with_public_ip: false
+    import_subnet_routes_with_public_ip: false

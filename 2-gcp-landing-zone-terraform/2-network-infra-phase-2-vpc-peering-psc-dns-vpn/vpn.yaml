@@ -1,0 +1,29 @@
+project_id: "yuvaraj-internal-project"
+default_region: "asia-south1"
+default_router_name: "router-hub"
+
+gateways:
+  - name: "ha-vpn-hub"
+    region: "asia-south1"
+    router_name: "router-hub"
+    description: "HA VPN Gateway in Hub VPC connecting to Singapore StrongSwan Router"
+
+    # Remote StrongSwan VM
+    peer_gateway:
+      name: "peer-strongswan-router"
+      redundancy_type: "SINGLE_IP_INTERNALLY_REDUNDANT"
+      interfaces:
+        - id: 0
+          ip_address: "35.197.151.95"
+
+    tunnels:
+      - name: "tunnel-0"
+        vpn_gateway_interface: 0
+        peer_external_gateway_interface: 0
+        shared_secret: "VpnStrongSwanSecret2026!#"
+        ike_version: 2
+        bgp_session:
+          router_interface_ip: "169.254.1.1/30"
+          peer_ip_address: "169.254.1.2"
+          peer_asn: 65002
+          advertised_route_priority: 100

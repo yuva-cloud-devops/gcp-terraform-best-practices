@@ -1,0 +1,108 @@
+project_id: yuvaraj-internal-project
+region: asia-south1
+
+tags:
+  provisioned_by: terraform
+  environment: dev
+
+network:
+  vpcs:
+    # ==========================================================================
+    # 1. HUB VPC (Region: asia-south1 - Mumbai)
+    # ==========================================================================
+    - network_name: vpc-hub
+      routing_mode: GLOBAL
+      description: "Hub VPC Network in Mumbai"
+
+      subnets:
+        - subnet_name: subnet-hub
+          subnet_ip: 10.10.1.0/24
+          subnet_region: asia-south1
+          subnet_private_access: true
+
+      firewall_rules:
+        ingress:
+          - name: hub-allow-iap-ssh
+            source_ranges:
+              - 35.235.240.0/20
+            target_tags:
+              - allow-iap-ssh
+            ports:
+              - "22"
+
+          # Allows traffic from other VPCs (Peering / VPN / Internal)
+          - name: hub-allow-internal
+            source_ranges:
+              - 10.0.0.0/8
+            protocol: "all"
+
+        egress:
+          - name: hub-allow-internet
+            destination_ranges:
+              - 0.0.0.0/0
+            ports:
+              - "80"
+              - "443"
+
+      router:
+        - name: router-hub
+          region: asia-south1
+          bgp:
+            asn: "65001"
+            advertise_mode: DEFAULT
+            keepalive_interval: 20
+
+      nat:
+        - name: nat-hub
+          region: asia-south1
+          router_name: router-hub
+
+    # ==========================================================================
+    # 2. SUB / SPOKE VPC (Region: asia-southeast1 - Singapore)
+    # ==========================================================================
+    - network_name: vpc-sub
+      routing_mode: GLOBAL
+      description: "Sub VPC Network in Singapore"
+
+      subnets:
+        - subnet_name: subnet-sub
+          subnet_ip: 10.20.1.0/24
+          subnet_region: asia-southeast1
+          subnet_private_access: true
+
+      firewall_rules:
+        ingress:
+          - name: sub-allow-iap-ssh
+            source_ranges:
+              - 35.235.240.0/20
+            target_tags:
+              - allow-iap-ssh
+            ports:
+              - "22"
+
+          # Allows traffic from other VPCs (Peering / VPN / Internal)
+          - name: sub-allow-internal
+            source_ranges:
+              - 10.0.0.0/8
+            protocol: "all"
+
+        egress:
+          - name: sub-allow-internet
+            destination_ranges:
+              - 0.0.0.0/0
+            ports:
+              - "80"
+              - "443"
+
+      router:
+        - name: router-sub
+          region: asia-southeast1
+          bgp:
+            asn: "65002"
+            advertise_mode: DEFAULT
+            keepalive_interval: 20
+
+      nat:
+        - name: nat-sub
+          region: asia-southeast1
+          router_name: router-sub

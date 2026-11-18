@@ -1,0 +1,10 @@
+project_id: yuvaraj-internal-project
+
+# ==============================================================================
+# Global PSC Endpoint for Google APIs
+# ==============================================================================
+google_apis_endpoints:
+  - name: "pscapishub"
+    ip_address: "10.10.0.100"
+    target: "all-apis"
+    description: "Private Service Connect endpoint for Google APIs in vpc-hub"

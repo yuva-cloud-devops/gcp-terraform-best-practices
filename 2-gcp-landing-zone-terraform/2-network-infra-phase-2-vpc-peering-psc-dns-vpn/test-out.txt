@@ -1,0 +1,46 @@
+yuvaraj_k@cloudshell:~ (yuvaraj-internal-project)$ gcloud compute addresses create vpn-router-ip \
+    --region=$REGION \
+    --project=$PROJECT_ID
+Created [https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/regions/asia-southeast1/addresses/vpn-router-ip].
+yuvaraj_k@cloudshell:~ (yuvaraj-internal-project)$ STATIC_IP=$(gcloud compute addresses describe vpn-router-ip \
+    --region=$REGION \
+    --project=$PROJECT_ID \
+    --format="value(address)")
+echo "========================================="
+echo "Your Singapore VM Static IP: ${STATIC_IP}"
+echo "========================================="
+=========================================
+Your Singapore VM Static IP: 35.197.151.95
+=========================================
+yuvaraj_k@cloudshell:~ (yuvaraj-internal-project)$ gcloud compute firewall-rules create default-allow-vpn-traffic \
+    --network=default \
+    --allow=udp:500,udp:4500,tcp:179,esp,icmp \
+    --target-tags=vpn-router \
+    --project=$PROJECT_ID
+Creating firewall...working..Created [https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/global/firewalls/default-allow-vpn-traffic].                                                                                    
+Creating firewall...done.                                                                                                                                                                                                                     
+NAME: default-allow-vpn-traffic
+NETWORK: default
+DIRECTION: INGRESS
+PRIORITY: 1000
+ALLOW: udp:500,udp:4500,tcp:179,esp,icmp
+DENY: 
+DISABLED: False
+yuvaraj_k@cloudshell:~ (yuvaraj-internal-project)$ gcloud compute instances create vpn-router \
+    --zone=$ZONE \
+    --machine-type=e2-medium \
+    --image-family=ubuntu-2204-lts \
+    --image-project=ubuntu-os-cloud \
+    --address=$STATIC_IP \
+    --can-ip-forward \
+    --tags=vpn-router \
+    --project=$PROJECT_ID
+Created [https://www.googleapis.com/compute/v1/projects/yuvaraj-internal-project/zones/asia-southeast1-a/instances/vpn-router].
+NAME: vpn-router
+ZONE: asia-southeast1-a
+MACHINE_TYPE: e2-medium
+PREEMPTIBLE: 
+INTERNAL_IP: 10.148.0.2
+EXTERNAL_IP: 35.197.151.95
+STATUS: RUNNING
+yuvaraj_k@cloudshell:~ (yuvaraj-internal-project)$ 
