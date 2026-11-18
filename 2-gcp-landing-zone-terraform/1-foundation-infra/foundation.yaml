@@ -1,0 +1,171 @@
+organization_id: "278632878375"  # cloudgeeks.online
+billing_account_id: "012D91-0F6EE1-44CE12" # Quadra GCP Master Billing Account
+
+
+
+
+# ------------------------------------------------------------------------------
+# 1. ESSENTIAL CONTACTS (Google incident, security, and billing alerts)
+# ------------------------------------------------------------------------------
+essential_contacts:
+  - email: "vasanthkumar.n@quadrasystems.net"
+    notification_categories: ["SECURITY", "TECHNICAL"]
+    language_tag: "en-US"
+  # - email: "bharath.k@quadrasystems.net"
+  #   notification_categories: ["BILLING"]
+  #   language_tag: "en-US"
+
+# ------------------------------------------------------------------------------
+# 2. GCP RESOURCE TAGS (Cryptographic tags for ABAC & Org Policies)
+# ------------------------------------------------------------------------------
+tags:
+  - key: "environment"
+    description: "Deployment lifecycle stage"
+    values: ["dev", "staging", "prod", "core", "bootstrap"]
+  - key: "data_classification"
+    description: "Data sensitivity classification"
+    values: ["public", "internal", "restricted"]
+
+# ------------------------------------------------------------------------------
+# 3. ORGANIZATION POLICIES (Org-wide Governance Guardrails)
+# ------------------------------------------------------------------------------
+org_policies:
+  boolean_policies:
+    - constraint: "compute.skipDefaultNetworkCreation"
+      enforce: true
+
+# ------------------------------------------------------------------------------
+# 4. ROOT ORGANIZATION IAM
+# ------------------------------------------------------------------------------
+organization_iam:
+  # - role: "roles/resourcemanager.organizationAdmin"
+  #   members:
+  #     - "group:gcp-org-admins@mycompany.com"
+  - role: "roles/billing.viewer"
+    members:
+      - "user:bharath.k@quadrasystems.net"
+  # - role: "roles/securityReviewer"
+  #   members:
+  #     - "group:secops-auditors@mycompany.com"
+
+
+
+# ------------------------------------------------------------------------------
+# 5. TOP-LEVEL FOLDERS (Parent: Organization)
+# ------------------------------------------------------------------------------
+top_level_folders:
+  - name: "core"
+    iam: []
+      # - role: "roles/resourcemanager.folderViewer"
+      #   members: ["user:vasanthkumar.n@quadrasystems.net"]
+  - name: "workloads"
+    iam: []
+      # - role: "roles/resourcemanager.folderViewer"
+      #   members: ["user:bharath.k@quadrasystems.net"]
+  - name: "sandbox"
+    iam: []
+
+# ------------------------------------------------------------------------------
+# 6. SUB-FOLDERS (Parent: One of top_level_folders)
+# ------------------------------------------------------------------------------
+sub_folders:
+  - name: "development"
+    parent: "workloads"
+    iam: []
+      # - role: "roles/viewer"
+      #   members: ["user:bharath.k@quadrasystems.net"]
+      # # # Temporal IAM Condition example
+      # # - role: "roles/resourcemanager.folderAdmin"
+      # #   members: ["user:lead-dev@mycompany.com"]
+      # #   condition:
+      # #     title: "temporary_lead_access"
+      # #     description: "Expires Dec 31, 2026"
+      # #     expression: 'request.time < timestamp("2026-12-31T23:59:59Z")'
+  - name: "production"
+    parent: "workloads"
+    iam: []
+      # - role: "roles/viewer"
+      #   members: ["user:vasanthkumar.n@quadrasystems.net"]
+
+
+
+# ------------------------------------------------------------------------------
+# 7. DYNAMIC PROJECTS
+# ------------------------------------------------------------------------------
+projects:
+
+  - name: "network-host"
+    prefix: "core"
+    target_folder: "core"
+    random_id: true
+    deprivilege_default_sa: true
+    auto_create_network: false          # Do not create the default VPC network (SecOps best practice) 
+    lien: false                         # Prod project: HARD DELETION LIEN ACTIVE
+    apis:
+      - "compute.googleapis.com"
+      - "cloudresourcemanager.googleapis.com"
+      - "iam.googleapis.com"
+      - "serviceusage.googleapis.com"
+      - "cloudbilling.googleapis.com"
+    labels:
+      environment: "core"
+      management: "network-team"
+    tag_bindings:
+      - "environment/core"
+      - "data_classification/internal"
+    iam: []
+    custom_service_accounts: []
+
+
+  - name: "ecommerce-devlopment"
+    prefix: "dev"
+    target_folder: "development"
+    random_id: true
+    deprivilege_default_sa: true
+    auto_create_network: false          # Do not create the default VPC network (SecOps best practice)
+    lien: false                         # Dev project: no hard deletion lien
+    apis:
+      - "compute.googleapis.com"
+      - "container.googleapis.com"
+    labels:
+      environment: "dev"
+      cost_center: "engineering"
+    tag_bindings:
+      - "environment/dev"
+      - "data_classification/internal"
+    iam:
+      - role: "roles/viewer"
+        members: ["user:vasanthkumar.n@quadrasystems.net"]
+      # - role: "roles/storage.objectAdmin"
+      #   members: ["user:vasanthkumar.n@quadrasystems.net"]
+    custom_service_accounts:
+      # - account_id: "backend-runtime-sa"
+      #   display_name: "Backend Runtime Identity"
+      #   roles:
+      #     - "roles/storage.objectUser"
+      #     - "roles/logging.logWriter"
+      - account_id: "cicd-deployer-sa"
+        display_name: "CI/CD Pipeline Service Account"
+        roles:
+          - "roles/container.developer"
+
+
+  - name: "ecommerce-production"
+    prefix: "prod"
+    target_folder: "production"
+    random_id: true
+    deprivilege_default_sa: true
+    auto_create_network: false          # Do not create the default VPC network (SecOps best practice)
+    lien: false                          # Prod project: HARD DELETION LIEN ACTIVE
+    apis:
+      - "compute.googleapis.com"
+      - "container.googleapis.com"
+      - "run.googleapis.com"
+    labels:
+      environment: "prod"
+      cost_center: "finance"
+    tag_bindings:
+      - "environment/prod"
+      - "data_classification/restricted"
+    iam: []
+    custom_service_accounts: []

@@ -1,0 +1,58 @@
+Outputs:
+
+folders = {
+  "core" = "folders/982884613697"
+  "development" = "folders/34251867195"
+  "production" = "folders/392958468870"
+  "sandbox" = "folders/241678440303"
+  "workloads" = "folders/287003684734"
+}
+org_policies = {
+  "compute.skipDefaultNetworkCreation" = {
+    "id" = "organizations/278632878375/policies/compute.skipDefaultNetworkCreation"
+    "name" = "compute.skipDefaultNetworkCreation"
+    "parent" = "organizations/278632878375"
+  }
+}
+organization_id = "278632878375"
+projects = {
+  "ecommerce-devlopment" = {
+    "auto_create_network" = false
+    "deletion_policy" = "DELETE"
+    "folder" = "34251867195"
+    "id" = "dev-ecommerce-devlopment-dp2w"
+    "number" = "910116024330"
+  }
+  "ecommerce-production" = {
+    "auto_create_network" = false
+    "deletion_policy" = "DELETE"
+    "folder" = "392958468870"
+    "id" = "prod-ecommerce-production-lvah"
+    "number" = "929363956730"
+  }
+  "network-host" = {
+    "auto_create_network" = false
+    "deletion_policy" = "DELETE"
+    "folder" = "982884613697"
+    "id" = "core-network-host-crk2"
+    "number" = "176021661824"
+  }
+}
+service_accounts = {
+  "ecommerce-devlopment-cicd-deployer-sa" = "cicd-deployer-sa@dev-ecommerce-devlopment-dp2w.iam.gserviceaccount.com"
+}
+tag_keys = {
+  "data_classification" = "tagKeys/281484544683291"
+  "environment" = "tagKeys/281475343997301"
+}
+tag_values = {
+  "data_classification/internal" = "tagValues/281475789381043"
+  "data_classification/public" = "tagValues/281476544293422"
+  "data_classification/restricted" = "tagValues/281484020121657"
+  "environment/bootstrap" = "tagValues/281476538376699"
+  "environment/core" = "tagValues/281481743854503"
+  "environment/dev" = "tagValues/281484724822420"
+  "environment/prod" = "tagValues/281476342677239"
+  "environment/staging" = "tagValues/281484197939846"
+}
+PS D:\GCP-DevOps-WorkSpace\gcp-terraform-best-practices\2-gcp-landing-zone-terraform\1-foundation-infra>

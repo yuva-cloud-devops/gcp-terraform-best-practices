@@ -1,0 +1,109 @@
+project_id: core-network-host-crk2
+region: asia-south1
+
+tags:
+  provisioned_by: terraform
+  project: gcp-shared-vpc-terraform
+
+network:
+  vpcs:
+    # ==========================================================================
+    # VPC 1: Platform Foundation VPC (Primary Application & GKE Workloads)
+    # ==========================================================================
+    - network_name: shared-vpc-vpc
+      routing_mode: GLOBAL
+      description: "Primary Platform Foundation VPC Network"
+
+      # Private Service Access (for Cloud SQL, Memorystore, etc.)
+      private_service_access:
+        enabled: true
+        name: shared-vpc-psa-range
+        prefix_length: 16
+        export_custom_routes: true
+        import_custom_routes: true
+
+      # Subnet Configuration
+      subnets:
+        - subnet_name: private-subnet-development
+          subnet_ip: 10.20.1.0/24
+          subnet_region: asia-south1
+          subnet_private_access: true
+          # secondary_ranges:
+          #   - range_name: gke-pods-development
+          #     ip_cidr_range: 10.200.0.0/16
+          #   - range_name: gke-services-development
+          #     ip_cidr_range: 10.201.0.0/20
+
+        - subnet_name: private-subnet-production
+          subnet_ip: 10.30.1.0/24
+          subnet_region: asia-southeast1
+          subnet_private_access: true
+
+      # Firewall Rules
+      firewall_rules:
+        ingress:
+          - name: allow-iap-ssh
+            source_ranges:
+              - 35.235.240.0/20
+            target_tags:
+              - allow-iap-ssh
+            ports:
+              - "22"
+
+          - name: allow-health-check
+            source_ranges:
+              - 130.211.0.0/22
+              - 35.191.0.0/16
+            target_tags:
+              - allow-health-check
+            ports:
+              - "8080"
+
+          - name: allow-load-balancer
+            source_ranges:
+              - 130.211.0.0/22
+              - 35.191.0.0/16
+            target_tags:
+              - allow-web
+            ports:
+              - "80"
+              - "443"
+              - "8080"
+
+        egress:
+          - name: allow-internet
+            destination_ranges:
+              - 0.0.0.0/0
+            ports:
+              - "80"
+              - "443"
+
+      # Cloud Routers for VPC 1
+      router:
+        - name: cloud-router-development
+          region: asia-south1
+          bgp:
+            asn: "65001"
+            advertise_mode: DEFAULT
+            keepalive_interval: 20
+
+        - name: cloud-router-production
+          region: asia-southeast1
+          bgp:
+            asn: "65002"
+            advertise_mode: CUSTOM
+            advertised_groups:
+              - ALL_SUBNETS
+            advertised_ip_ranges:
+              - range: 10.30.1.0/24
+                description: "production Primary Subnet"
+
+      # Cloud NATs for VPC 1
+      nat:
+        - name: cloud-nat-development
+          region: asia-south1
+          router_name: cloud-router-development
+
+        - name: cloud-nat-production
+          region: asia-southeast1
+          router_name: cloud-router-production

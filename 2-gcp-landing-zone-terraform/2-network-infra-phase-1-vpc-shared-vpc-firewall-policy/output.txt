@@ -1,0 +1,353 @@
+Outputs:
+
+association_id = "locations/global/firewallPolicies/960323612002/associations/secops-mandatory-guardrails-association"
+attached_service_projects = [
+  "dev-ecommerce-devlopment-dp2w",
+  "prod-ecommerce-production-lvah",
+]
+attached_target = "folders/982884613697"
+configured_rule_priorities = [
+  1000,
+  1001,
+  2000,
+  3000,
+  900,
+]
+configured_subnet_delegations = 8
+firewall_summary = {
+  "allow-health-check" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([
+          "8080",
+        ])
+        "protocol" = "tcp"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([])
+    "direction" = "INGRESS"
+    "disabled" = false
+    "id" = "projects/core-network-host-crk2/global/firewalls/allow-health-check"
+    "log_config" = tolist([])
+    "name" = "allow-health-check"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/firewalls/allow-health-check"
+    "source_ranges" = toset([
+      "130.211.0.0/22",
+      "35.191.0.0/16",
+    ])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([
+      "allow-health-check",
+    ])
+    "vpc_name" = "shared-vpc-vpc"
+  }
+  "allow-iap-ssh" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([
+          "22",
+        ])
+        "protocol" = "tcp"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([])
+    "direction" = "INGRESS"
+    "disabled" = false
+    "id" = "projects/core-network-host-crk2/global/firewalls/allow-iap-ssh"
+    "log_config" = tolist([])
+    "name" = "allow-iap-ssh"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/firewalls/allow-iap-ssh"
+    "source_ranges" = toset([
+      "35.235.240.0/20",
+    ])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([
+      "allow-iap-ssh",
+    ])
+    "vpc_name" = "shared-vpc-vpc"
+  }
+  "allow-internet" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([
+          "80",
+          "443",
+        ])
+        "protocol" = "tcp"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([
+      "0.0.0.0/0",
+    ])
+    "direction" = "EGRESS"
+    "disabled" = false
+    "id" = "projects/core-network-host-crk2/global/firewalls/allow-internet"
+    "log_config" = tolist([])
+    "name" = "allow-internet"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/firewalls/allow-internet"
+    "source_ranges" = toset([])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([])
+    "vpc_name" = "shared-vpc-vpc"
+  }
+  "allow-load-balancer" = {
+    "allow" = toset([
+      {
+        "ports" = tolist([
+          "80",
+          "443",
+          "8080",
+        ])
+        "protocol" = "tcp"
+      },
+    ])
+    "deny" = toset([])
+    "description" = "Managed by Terraform"
+    "destination_ranges" = toset([])
+    "direction" = "INGRESS"
+    "disabled" = false
+    "id" = "projects/core-network-host-crk2/global/firewalls/allow-load-balancer"
+    "log_config" = tolist([])
+    "name" = "allow-load-balancer"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "priority" = 1000
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/firewalls/allow-load-balancer"
+    "source_ranges" = toset([
+      "130.211.0.0/22",
+      "35.191.0.0/16",
+    ])
+    "source_service_accounts" = toset([])
+    "source_tags" = toset([])
+    "target_service_accounts" = toset([])
+    "target_tags" = toset([
+      "allow-web",
+    ])
+    "vpc_name" = "shared-vpc-vpc"
+  }
+}
+host_project_id = "core-network-host-crk2"
+nat_summary = {
+  "cloud-nat-development" = {
+    "enable_dynamic_port_allocation" = false
+    "enable_endpoint_independent_mapping" = false
+    "id" = "core-network-host-crk2/asia-south1/cloud-router-development/cloud-nat-development"
+    "log_config" = tolist([
+      {
+        "enable" = true
+        "filter" = "ERRORS_ONLY"
+      },
+    ])
+    "max_ports_per_vm" = 0
+    "min_ports_per_vm" = 64
+    "name" = "cloud-nat-development"
+    "nat_ip_allocate_option" = "AUTO_ONLY"
+    "nat_ips" = toset([])
+    "region" = "asia-south1"
+    "router" = "cloud-router-development"
+    "source_subnetwork_ip_ranges_to_nat" = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+    "vpc_name" = "shared-vpc-vpc"
+  }
+  "cloud-nat-production" = {
+    "enable_dynamic_port_allocation" = false
+    "enable_endpoint_independent_mapping" = false
+    "id" = "core-network-host-crk2/asia-southeast1/cloud-router-production/cloud-nat-production"
+    "log_config" = tolist([
+      {
+        "enable" = true
+        "filter" = "ERRORS_ONLY"
+      },
+    ])
+    "max_ports_per_vm" = 0
+    "min_ports_per_vm" = 64
+    "name" = "cloud-nat-production"
+    "nat_ip_allocate_option" = "AUTO_ONLY"
+    "nat_ips" = toset([])
+    "region" = "asia-southeast1"
+    "router" = "cloud-router-production"
+    "source_subnetwork_ip_ranges_to_nat" = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+    "vpc_name" = "shared-vpc-vpc"
+  }
+}
+policy_id = "locations/global/firewallPolicies/960323612002"
+policy_name = "secops-mandatory-guardrails"
+private_service_access_connections = {
+  "shared-vpc-vpc" = {
+    "id" = "projects%2Fcore-network-host-crk2%2Fglobal%2Fnetworks%2Fshared-vpc-vpc:servicenetworking.googleapis.com"
+    "network" = "projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "peering" = "servicenetworking-googleapis-com"
+    "reserved_peering_ranges" = tolist([
+      "shared-vpc-psa-range",
+    ])
+    "service" = "servicenetworking.googleapis.com"
+  }
+}
+private_service_access_ranges = {
+  "shared-vpc-psa-range" = {
+    "address" = "10.33.0.0"
+    "address_type" = "INTERNAL"
+    "cidr" = "10.33.0.0/16"
+    "id" = "projects/core-network-host-crk2/global/addresses/shared-vpc-psa-range"
+    "name" = "shared-vpc-psa-range"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "prefix_length" = 16
+    "purpose" = "VPC_PEERING"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/addresses/shared-vpc-psa-range"
+  }
+}
+router_summary = {
+  "cloud-router-development" = {
+    "bgp" = tolist([
+      {
+        "advertise_mode" = "DEFAULT"
+        "advertised_groups" = tolist([])
+        "advertised_ip_ranges" = tolist([])
+        "asn" = 65001
+        "identifier_range" = ""
+        "keepalive_interval" = 20
+      },
+    ])
+    "encrypted_interconnect_router" = false
+    "id" = "projects/core-network-host-crk2/regions/asia-south1/routers/cloud-router-development"
+    "name" = "cloud-router-development"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "region" = "asia-south1"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/regions/asia-south1/routers/cloud-router-development"
+    "vpc_name" = "shared-vpc-vpc"
+  }
+  "cloud-router-production" = {
+    "bgp" = tolist([
+      {
+        "advertise_mode" = "CUSTOM"
+        "advertised_groups" = tolist([
+          "ALL_SUBNETS",
+        ])
+        "advertised_ip_ranges" = tolist([
+          {
+            "description" = "production Primary Subnet"
+            "range" = "10.30.1.0/24"
+          },
+        ])
+        "asn" = 65002
+        "identifier_range" = ""
+        "keepalive_interval" = 20
+      },
+    ])
+    "encrypted_interconnect_router" = false
+    "id" = "projects/core-network-host-crk2/regions/asia-southeast1/routers/cloud-router-production"
+    "name" = "cloud-router-production"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "region" = "asia-southeast1"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/regions/asia-southeast1/routers/cloud-router-production"
+    "vpc_name" = "shared-vpc-vpc"
+  }
+}
+rules_summary = {
+  "1000" = {
+    "action" = "deny"
+    "description" = "Block public SSH from 0.0.0.0/0"
+    "direction" = "INGRESS"
+    "enable_logging" = true
+    "priority" = 1000
+  }
+  "1001" = {
+    "action" = "deny"
+    "description" = "Block public RDP from 0.0.0.0/0"
+    "direction" = "INGRESS"
+    "enable_logging" = true
+    "priority" = 1001
+  }
+  "2000" = {
+    "action" = "allow"
+    "description" = "Allow Google Cloud Load Balancer and Health Check probes"
+    "direction" = "INGRESS"
+    "enable_logging" = false
+    "priority" = 2000
+  }
+  "3000" = {
+    "action" = "allow"
+    "description" = "Allow all internal RFC1918 traffic between VPC subnets"
+    "direction" = "INGRESS"
+    "enable_logging" = false
+    "priority" = 3000
+  }
+  "900" = {
+    "action" = "allow"
+    "description" = "Allow IAP SSH access from Google proxy range"
+    "direction" = "INGRESS"
+    "enable_logging" = false
+    "priority" = 900
+  }
+}
+service_project_attachments = {
+  "dev-ecommerce-devlopment-dp2w" = {
+    "host_project" = "core-network-host-crk2"
+    "id" = "core-network-host-crk2/dev-ecommerce-devlopment-dp2w"
+    "service_project" = "dev-ecommerce-devlopment-dp2w"
+  }
+  "prod-ecommerce-production-lvah" = {
+    "host_project" = "core-network-host-crk2"
+    "id" = "core-network-host-crk2/prod-ecommerce-production-lvah"
+    "service_project" = "prod-ecommerce-production-lvah"
+  }
+}
+subnet_summary = {
+  "private-subnet-development" = {
+    "gateway_address" = "10.20.1.1"
+    "id" = "projects/core-network-host-crk2/regions/asia-south1/subnetworks/private-subnet-development"
+    "ip_cidr_range" = "10.20.1.0/24"
+    "name" = "private-subnet-development"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "private_ip_google_access" = true
+    "purpose" = "PRIVATE"
+    "region" = "asia-south1"
+    "role" = ""
+    "secondary_ip_ranges" = tolist([])
+    "secondary_ranges_map" = {}
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/regions/asia-south1/subnetworks/private-subnet-development"
+    "vpc_name" = "shared-vpc-vpc"
+  }
+  "private-subnet-production" = {
+    "gateway_address" = "10.30.1.1"
+    "id" = "projects/core-network-host-crk2/regions/asia-southeast1/subnetworks/private-subnet-production"
+    "ip_cidr_range" = "10.30.1.0/24"
+    "name" = "private-subnet-production"
+    "network" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "private_ip_google_access" = true
+    "purpose" = "PRIVATE"
+    "region" = "asia-southeast1"
+    "role" = ""
+    "secondary_ip_ranges" = tolist([])
+    "secondary_ranges_map" = {}
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/regions/asia-southeast1/subnetworks/private-subnet-production"
+    "vpc_name" = "shared-vpc-vpc"
+  }
+}
+vpc_summary = {
+  "shared-vpc-vpc" = {
+    "delete_default_routes_on_create" = false
+    "gateway_ipv4" = ""
+    "id" = "projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+    "mtu" = 0
+    "name" = "shared-vpc-vpc"
+    "routing_mode" = "GLOBAL"
+    "self_link" = "https://www.googleapis.com/compute/v1/projects/core-network-host-crk2/global/networks/shared-vpc-vpc"
+  }
+}
