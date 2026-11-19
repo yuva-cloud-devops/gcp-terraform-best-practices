@@ -1,0 +1,91 @@
+# ==============================================================================
+# GCP Audit & Compliance Infrastructure Test Configuration
+# ==============================================================================
+project_id: "yuvaraj-internal-project"
+default_location: "asia-south1"
+
+# common_labels:
+#   environment: "production"
+#   department: "secops"
+#   managed_by: "terraform"
+#   compliance: "cis-benchmark-v3"
+
+# # ------------------------------------------------------------------------------
+# # 1. Enable Data Access Audit Logs (Admin Read, Data Read, Data Write)
+# # ------------------------------------------------------------------------------
+# audit_logs:
+#   scope: "project"
+#   target_id: "yuvaraj-internal-project"
+#   services:
+#     - service: "allServices"
+#       log_types:
+#         - "ADMIN_READ"
+#         - "DATA_READ"
+#         - "DATA_WRITE"
+#       exempted_members: []
+
+# ------------------------------------------------------------------------------
+# 2. Managed Destinations (Auto-created by Terraform)
+# ------------------------------------------------------------------------------
+destinations:
+  # Cloud Storage: Cold compliance storage with WORM retention policy
+  storage_buckets:
+    - name: "secops-audit-cold-storage-yuvaraj-internal-project" # Must be globally unique
+      location: "asia-south1"
+      storage_class: "STANDARD"
+      versioning: true
+      retention_policy:
+        retention_period_days: 365
+        is_locked: false # Set to true only in final production to lock WORM
+      lifecycle_rules:
+        - action:
+            type: "SetStorageClass"
+            storage_class: "COLDLINE"
+          condition:
+            age: 90
+
+#   # BigQuery: Centralized security analytics for threat hunting
+#   bigquery_datasets:
+#     - dataset_id: "secops_audit_analytics"
+#       location: "asia-south1"
+#       description: "Centralized Audit Analytics Dataset for Threat Hunting"
+#       default_table_expiration_ms: 7776000000 # 90 days
+
+#   # Pub/Sub: Real-time streaming to SIEM (Chronicle, Splunk, Datadog)
+#   pubsub_topics:
+#     - name: "siem-audit-stream"
+
+# # ------------------------------------------------------------------------------
+# # 3. Centralized Log Sinks (With automated writer IAM delegation)
+# # ------------------------------------------------------------------------------
+# log_sinks:
+#   # Sink 1: Export all audit logs to Cloud Storage with health probe exclusions
+#   - name: "sink-cold-storage-audit"
+#     scope: "project"
+#     destination: "bucket:secops-audit-cold-storage-yuvaraj-internal-project"
+#     filter: 'protoPayload.@type="type.googleapis.com/google.cloud.audit.AuditLog"'
+#     exclusions:
+#       - name: "exclude-liveness-probes"
+#         filter: 'protoPayload.methodName="google.monitoring.v3.UptimeCheckService.GetUptimeCheckConfig"'
+
+#   # Sink 2: Export all audit logs to BigQuery for SQL analytics
+#   - name: "sink-bigquery-security-logs"
+#     scope: "project"
+#     destination: "bigquery:secops_audit_analytics"
+#     filter: 'protoPayload.@type="type.googleapis.com/google.cloud.audit.AuditLog"'
+
+#   # Sink 3: Stream high-severity logs (WARNING, ERROR, CRITICAL) to Pub/Sub SIEM
+#   - name: "sink-pubsub-siem-stream"
+#     scope: "project"
+#     destination: "pubsub:siem-audit-stream"
+#     filter: 'severity >= WARNING'
+
+# # ------------------------------------------------------------------------------
+# # 4. Security Metrics (All 9 CIS Benchmark Controls + Custom Metric)
+# # ------------------------------------------------------------------------------
+# security_metrics:
+#   enable_cis_benchmarks: true # Provisions CIS 2.4 to 2.12 automatically
+#   custom_metrics:
+#     - name: "secret_manager_unauthorized_access"
+#       description: "Alerts on unauthorized Secret Manager access attempts (Permission Denied)"
+#       filter: 'protoPayload.serviceName="secretmanager.googleapis.com" AND protoPayload.status.code=7'

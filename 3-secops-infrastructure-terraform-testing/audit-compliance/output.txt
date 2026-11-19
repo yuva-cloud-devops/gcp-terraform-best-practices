@@ -1,0 +1,151 @@
+Outputs:
+
+audit_services = {
+  "allServices" = {
+    "exempted_members" = []
+    "log_types" = [
+      "ADMIN_READ",
+      "DATA_READ",
+      "DATA_WRITE",
+    ]
+    "service" = "allServices"
+  }
+}
+bigquery_datasets = {
+  "secops_audit_analytics" = {
+    "dataset_id" = "secops_audit_analytics"
+    "id" = "projects/yuvaraj-internal-project/datasets/secops_audit_analytics"
+    "location" = "asia-south1"
+    "project" = "yuvaraj-internal-project"
+  }
+}
+pubsub_topics = {
+  "siem-audit-stream" = {
+    "id" = "projects/yuvaraj-internal-project/topics/siem-audit-stream"
+    "name" = "siem-audit-stream"
+    "project" = "yuvaraj-internal-project"
+  }
+}
+security_metrics = {
+  "cis_audit_config_changes" = {
+    "description" = "CIS 2.5: Alerts on Data Access audit logging configuration changes"
+    "filter" = "protoPayload.methodName=\"SetIamPolicy\" AND protoPayload.serviceData.policyDelta.auditConfigDeltas:*"
+    "id" = "cis_audit_config_changes"
+    "name" = "cis_audit_config_changes"
+    "project" = "yuvaraj-internal-project"
+  }
+  "cis_cloud_sql_changes" = {
+    "description" = "CIS 2.11: Alerts on Cloud SQL database instance configuration updates"
+    "filter" = "protoPayload.serviceName=\"cloudsql.googleapis.com\" AND (protoPayload.methodName:\"update\" OR protoPayload.methodName:\"delete\")"
+    "id" = "cis_cloud_sql_changes"
+    "name" = "cis_cloud_sql_changes"
+    "project" = "yuvaraj-internal-project"
+  }
+  "cis_custom_role_changes" = {
+    "description" = "CIS 2.6: Alerts on Custom IAM Role creation, deletion, or modifications"
+    "filter" = "resource.type=\"iam_role\" AND (protoPayload.methodName:\"CreateRole\" OR protoPayload.methodName:\"DeleteRole\" OR protoPayload.methodName:\"UpdateRole\")"
+    "id" = "cis_custom_role_changes"
+    "name" = "cis_custom_role_changes"
+    "project" = "yuvaraj-internal-project"
+  }
+  "cis_firewall_rule_changes" = {
+    "description" = "CIS 2.7: Alerts on VPC firewall rule creation, deletion, or modification"
+    "filter" = "resource.type=\"gce_firewall_rule\" AND (protoPayload.methodName:\"insert\" OR protoPayload.methodName:\"delete\" OR protoPayload.methodName:\"patch\")"
+    "id" = "cis_firewall_rule_changes"
+    "name" = "cis_firewall_rule_changes"
+    "project" = "yuvaraj-internal-project"
+  }
+  "cis_iam_policy_changes" = {
+    "description" = "CIS 2.4: Alerts on IAM role and policy assignment changes"
+    "filter" = "(protoPayload.serviceName=\"iam.googleapis.com\" OR protoPayload.serviceName=\"resourcemanager.googleapis.com\") AND (protoPayload.methodName:\"SetIamPolicy\" OR protoPayload.methodName:\"SetOrgPolicy\")"
+    "id" = "cis_iam_policy_changes"
+    "name" = "cis_iam_policy_changes"
+    "project" = "yuvaraj-internal-project"
+  }
+  "cis_kms_key_destruction" = {
+    "description" = "CIS 2.12: Alerts on Cloud KMS cryptographic key scheduled destruction"
+    "filter" = "protoPayload.serviceName=\"cloudkms.googleapis.com\" AND protoPayload.methodName=\"google.crypto.kms.v1.KeyManagementService.DestroyCryptoKeyVersion\""
+    "id" = "cis_kms_key_destruction"
+    "name" = "cis_kms_key_destruction"
+    "project" = "yuvaraj-internal-project"
+  }
+  "cis_network_route_changes" = {
+    "description" = "CIS 2.8: Alerts on VPC network route creation, deletion, or modification"
+    "filter" = "resource.type=\"gce_route\" AND (protoPayload.methodName:\"insert\" OR protoPayload.methodName:\"delete\")"
+    "id" = "cis_network_route_changes"
+    "name" = "cis_network_route_changes"
+    "project" = "yuvaraj-internal-project"
+  }
+  "cis_storage_iam_changes" = {
+    "description" = "CIS 2.10: Alerts on Cloud Storage bucket IAM permission changes"
+    "filter" = "protoPayload.serviceName=\"storage.googleapis.com\" AND protoPayload.methodName=\"storage.setIamPermissions\""
+    "id" = "cis_storage_iam_changes"
+    "name" = "cis_storage_iam_changes"
+    "project" = "yuvaraj-internal-project"
+  }
+  "cis_vpc_network_changes" = {
+    "description" = "CIS 2.9: Alerts on VPC network creation, deletion, or subnet modification"
+    "filter" = "resource.type=\"gce_network\" AND (protoPayload.methodName:\"insert\" OR protoPayload.methodName:\"delete\" OR protoPayload.methodName:\"patch\")"
+    "id" = "cis_vpc_network_changes"
+    "name" = "cis_vpc_network_changes"
+    "project" = "yuvaraj-internal-project"
+  }
+  "secret_manager_unauthorized_access" = {
+    "description" = "Alerts on unauthorized Secret Manager access attempts (Permission Denied)"
+    "filter" = "protoPayload.serviceName=\"secretmanager.googleapis.com\" AND protoPayload.status.code=7"
+    "id" = "secret_manager_unauthorized_access"
+    "name" = "secret_manager_unauthorized_access"
+    "project" = "yuvaraj-internal-project"
+  }
+}
+sink_writer_identities = {
+  "sink-bigquery-security-logs" = "serviceAccount:service-986244541727@gcp-sa-logging.iam.gserviceaccount.com"
+  "sink-cold-storage-audit" = "serviceAccount:service-986244541727@gcp-sa-logging.iam.gserviceaccount.com"
+  "sink-pubsub-siem-stream" = "serviceAccount:service-986244541727@gcp-sa-logging.iam.gserviceaccount.com"
+}
+sinks = {
+  "sink-bigquery-security-logs" = {
+    "destination" = "bigquery.googleapis.com/projects/yuvaraj-internal-project/datasets/secops_audit_analytics"
+    "filter" = "protoPayload.@type=\"type.googleapis.com/google.cloud.audit.AuditLog\""
+    "name" = "sink-bigquery-security-logs"
+    "scope" = "project"
+    "target_id" = "yuvaraj-internal-project"
+    "writer_identity" = "serviceAccount:service-986244541727@gcp-sa-logging.iam.gserviceaccount.com"
+  }
+  "sink-cold-storage-audit" = {
+    "destination" = "storage.googleapis.com/secops-audit-cold-storage-yuvaraj-internal-project"
+    "filter" = "protoPayload.@type=\"type.googleapis.com/google.cloud.audit.AuditLog\""
+    "name" = "sink-cold-storage-audit"
+    "scope" = "project"
+    "target_id" = "yuvaraj-internal-project"
+    "writer_identity" = "serviceAccount:service-986244541727@gcp-sa-logging.iam.gserviceaccount.com"
+  }
+  "sink-pubsub-siem-stream" = {
+    "destination" = "pubsub.googleapis.com/projects/yuvaraj-internal-project/topics/siem-audit-stream"
+    "filter" = "severity >= WARNING"
+    "name" = "sink-pubsub-siem-stream"
+    "scope" = "project"
+    "target_id" = "yuvaraj-internal-project"
+    "writer_identity" = "serviceAccount:service-986244541727@gcp-sa-logging.iam.gserviceaccount.com"
+  }
+}
+storage_buckets = {
+  "secops-audit-cold-storage-yuvaraj-internal-project" = {
+    "id" = "secops-audit-cold-storage-yuvaraj-internal-project"
+    "location" = "ASIA-SOUTH1"
+    "name" = "secops-audit-cold-storage-yuvaraj-internal-project"
+    "url" = "gs://secops-audit-cold-storage-yuvaraj-internal-project"
+  }
+}
+summary = {
+  "audit_services_count" = 1
+  "bigquery_dataset_count" = 1
+  "folder_sinks_count" = 0
+  "org_sinks_count" = 0
+  "project_sinks_count" = 3
+  "pubsub_topics_count" = 1
+  "security_metrics_count" = 10
+  "storage_buckets_count" = 1
+  "total_sinks_count" = 3
+}
+PS D:\GCP-DevOps-WorkSpace\gcp-terraform-best-practices\3-secops-infrastructure-terraform-testing\audit-compliance> 
