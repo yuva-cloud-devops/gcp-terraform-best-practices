@@ -1,0 +1,62 @@
+zero_trust_security:
+  project_id: "yuvaraj-internal-project"
+
+  # =========================================================================
+  # 1. WORKLOAD IDENTITY FEDERATION (KEYLESS AUTHENTICATION)
+  # =========================================================================
+  workload_identity_pools:
+    pool-github-actions:
+      display_name: "GitHub Actions CI/CD Pool"
+      description: "Workload Identity Pool for keyless GitHub Actions deployments"
+      disabled: false
+      providers:
+        provider-github:
+          display_name: "GitHub Actions OIDC Provider"
+          description: "OIDC provider for GitHub Actions"
+          disabled: false
+          attribute_condition: "assertion.repository_owner == 'yuva-cloud-devops'"
+          attribute_mapping:
+            google.subject: "assertion.sub"
+            attribute.actor: "assertion.actor"
+            attribute.repository: "assertion.repository"
+            attribute.repository_owner: "assertion.repository_owner"
+            attribute.ref: "assertion.ref"
+          oidc:
+            issuer_uri: "https://token.actions.githubusercontent.com"
+
+  # =========================================================================
+  # 2. DEDICATED SERVICE ACCOUNTS FOR FEDERATED IMPERSONATION
+  # =========================================================================
+  service_accounts:
+    sa-cicd-deployer:
+      account_id: "sa-cicd-deployer"
+      display_name: "Keyless CI/CD Deployment Service Account"
+      description: "Impersonated by GitHub Actions via Workload Identity Federation"
+      roles:
+        - "roles/viewer"
+        - "roles/compute.networkViewer"
+      workload_identity_bindings:
+        - pool_key: "pool-github-actions"
+          attribute_name: "attribute.repository"
+          attribute_value: "yuva-cloud-devops/gcp-testing-github-repo"
+
+  # =========================================================================
+  # 3. IDENTITY-AWARE PROXY (IAP) TCP TUNNELING FOR ZERO-PUBLIC-IP VMS
+  # =========================================================================
+  iap_tcp_tunneling:
+    enabled: true
+    firewall_rule:
+      name: "allow-iap-tcp-ingress"
+      network: "default"
+      description: "Allow IAP TCP forwarding from Google netblock (35.235.240.0/20) for SSH & RDP"
+      target_tags:
+        - "allow-iap-ssh"
+        - "allow-iap-rdp"
+      ports:
+        - "22"
+        - "3389"
+    accessors:
+      - member: "user:bharath.k@quadrasystems.net"
+        role: "roles/iap.tunnelResourceAccessor"
+      - member: "user:yuvaraj.k@quadrasystems.net"
+        role: "roles/iap.tunnelResourceAccessor"
