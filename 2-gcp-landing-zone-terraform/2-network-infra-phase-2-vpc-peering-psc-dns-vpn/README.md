@@ -1,6 +1,16 @@
-# Phase 2: Advanced Network Infrastructure (VPC Peering, Cloud DNS, PSC & HA Cloud VPN)
+# Phase 2 (Advanced): Network Infrastructure (VPC Peering, Cloud DNS, PSC & HA Cloud VPN)
 
 This directory implements enterprise-grade, advanced hybrid and multi-VPC networking on Google Cloud Platform using Terraform. It establishes a multi-region **Hub-and-Spoke topology**, configures **VPC Network Peering**, enables **Private Service Connect (PSC)** for secure Google API access, sets up private **Cloud DNS** zones for internal service discovery, and deploys high-availability **HA Cloud VPN** with dynamic eBGP routing to an external gateway.
+
+---
+
+## Navigation & Repository Index
+
+- [Root Repository README](../../README.md)
+- [Phase 0: Bootstrap & Governance](../0-bootstrap/README.md)
+- [Phase 1: Foundation Infrastructure](../1-foundation-infra/README.md)
+- [Phase 2: Network Infrastructure Phase 1](../2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/README.md)
+- [Module 3: SecOps Infrastructure Testing](../../3-secops-infrastructure-terraform-testing/README.md)
 
 ---
 
@@ -254,3 +264,10 @@ terraform plan
 # Apply infrastructure changes
 terraform apply
 ```
+
+---
+
+## Next Steps: Security Operations & Zero-Trust
+
+Proceed to **Module 3: SecOps Infrastructure & Zero-Trust Cloud Security Testing**:
+- [Module 3: SecOps Infrastructure Testing](../../3-secops-infrastructure-terraform-testing/README.md)

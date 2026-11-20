@@ -4,6 +4,16 @@ This directory contains the **Network Infrastructure Phase 1** layer for the Goo
 
 ---
 
+## Navigation & Repository Index
+
+- [Root Repository README](../../README.md)
+- [Phase 0: Bootstrap & Governance](../0-bootstrap/README.md)
+- [Phase 1: Foundation Infrastructure](../1-foundation-infra/README.md)
+- [Phase 2 (Advanced): Network Infrastructure Phase 2](../2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md)
+- [Module 3: SecOps Infrastructure Testing](../../3-secops-infrastructure-terraform-testing/README.md)
+
+---
+
 ## Network Architecture
 
 ```mermaid
@@ -157,3 +167,10 @@ server: UploadServer
 * [`output.tf`](./output.tf) — Exposes VPC self-links, subnet summaries, NAT configs, and rule summaries.
 * [`output.txt`](./output.txt) — Captured live Terraform state outputs.
 * [`vm-test-output.txt`](./vm-test-output.txt) — Captured CLI session validating IAP, Cloud NAT, and PGA connectivity.
+
+---
+
+## Next Steps
+
+Proceed to **Phase 2 (Advanced) Hybrid Network Infrastructure**:
+- [2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md](../2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md)

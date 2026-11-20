@@ -4,6 +4,16 @@ This directory contains the **Foundation Infrastructure** layer for the Google C
 
 ---
 
+## Navigation & Repository Index
+
+- [Root Repository README](../../README.md)
+- [Phase 0: Bootstrap & Governance](../0-bootstrap/README.md)
+- [Phase 2: Network Infrastructure Phase 1](../2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/README.md)
+- [Phase 2 (Advanced): Network Infrastructure Phase 2](../2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md)
+- [Module 3: SecOps Infrastructure Testing](../../3-secops-infrastructure-terraform-testing/README.md)
+
+---
+
 ## Architecture & Hierarchy
 
 ```mermaid

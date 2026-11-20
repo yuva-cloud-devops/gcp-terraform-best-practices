@@ -8,8 +8,9 @@ This repository implements an enterprise-grade, modular **Google Cloud Platform 
 
 ```text
 2-gcp-landing-zone-terraform/
-├── README.md                                                        # Root Landing Zone Architecture & Index
+├── README.md                                                        # Root Landing Zone Architecture & Index (This File)
 ├── 0-bootstrap/
+│   ├── README.md                                                    # Bootstrap Overview & Prerequisites Checklist
 │   ├── 1-IAM-Policy.md                                              # Prerequisites & IAM Permissions
 │   └── 2-bootstrap-project.md                                       # Bootstrap Project, GCS State & Troubleshooting
 ├── 1-foundation-infra/
@@ -139,7 +140,8 @@ flowchart TD
 
 ## Phase Breakdown & Execution Sequence
 
-### [Phase 0: Bootstrap Setup](./0-bootstrap/2-bootstrap-project.md)
+### [Phase 0: Bootstrap & Governance Setup](./0-bootstrap/README.md)
+* Overview: [`0-bootstrap/README.md`](./0-bootstrap/README.md)
 * Setup guide: [`0-bootstrap/2-bootstrap-project.md`](./0-bootstrap/2-bootstrap-project.md)
 * Prerequisites & IAM roles: [`0-bootstrap/1-IAM-Policy.md`](./0-bootstrap/1-IAM-Policy.md)
 * Provisions the bootstrap project, remote GCS state bucket, and enables foundational APIs.
@@ -220,3 +222,10 @@ For detailed troubleshooting, see [`0-bootstrap/2-bootstrap-project.md`](./0-boo
 | **Firewall Deletion 403 (`compute.firewalls.delete`)** | `auto_create_network = false` tries to delete default firewall rules without permissions. | Enable `orgpolicy.googleapis.com` so Terraform applies `compute.skipDefaultNetworkCreation` Org Policy automatically. |
 | **IAM Policy (`User ...+demo@... does not exist`)** | `+demo` alias used under `organization_iam`, `top_level_folders`, or `projects.iam`. | Use aliases only under `essential_contacts`; all IAM members must be registered Cloud Identity accounts. |
 | **Invalid Project Label (`invalid project label`)** | Spaces in label values (e.g. `management: "network team"`). | Replace spaces with hyphens or underscores (e.g. `management: "network-team"`). |
+
+---
+
+## Next Steps: Security Operations & Zero-Trust
+
+After the Landing Zone networking layer is established, proceed to **Module 3: SecOps Infrastructure & Zero-Trust Cloud Security Testing**:
+- [Module 3: SecOps Infrastructure Testing](../3-secops-infrastructure-terraform-testing/README.md)

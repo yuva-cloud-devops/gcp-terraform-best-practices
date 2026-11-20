@@ -1,10 +1,22 @@
 # Cloud Infrastructure Competency & Terraform Automation Assessment (GCP)
 
+This document provides a comprehensive evaluation of **Google Cloud Platform (GCP)** infrastructure services, assessing what can be automated with HashiCorp Terraform versus where operational manual boundaries exist.
+
+---
+
+## Navigation & Repository Index
+
+- [Root Repository README](../README.md)
+- [Module 1: Reverse Terraform (Import Guide)](../1-reverse-terraform/README.md)
+- [Module 2: Enterprise GCP Landing Zone](../2-gcp-landing-zone-terraform/README.md)
+- [Module 3: SecOps Infrastructure Testing](../3-secops-infrastructure-terraform-testing/README.md)
+
+---
 
 ## Master Competency & Automation Matrix
 
 | # | Competency Checklist Item | GCP Core Services | Terraform Automatable? | Exact Terraform Resources | What CANNOT be Automated / Manual Boundary |
-| :-: | :--- | :--- | :-: | :--- | :--- |
+| :-: | :--- | :--- | :---: | :--- | :--- |
 | **1** | **Understand cloud architecture & core infrastructure services** | Global VPC, Regions/Zones, Multi-tier architecture | **Concept** | Demonstrated via modular IaC structure | N/A (Demonstrated through architecture and design patterns) |
 | **2** | **Provision resource groups/projects & manage accounts** | Resource Manager (Folders, Projects), Cloud Billing | **Yes (90%)** | `google_folder`, `google_project`, `google_project_service` | Cannot create root Organization or initial Billing Account (requires Cloud Identity & billing contract) |
 | **3** | **Provision Virtual Networks (GCP VPC)** | VPC Network, Shared VPC (Host & Service) | **Yes (100%)** | `google_compute_network`, `google_compute_shared_vpc_*` | None (100% automatable via code) |
@@ -180,3 +192,14 @@
   * VPC Service Controls security perimeters (`google_access_context_manager_*`).
 * **What CANNOT be automated:**
   * Formal regulatory audits and third-party certifications (SOC 2, ISO 27001, PCI-DSS compliance sign-offs require accredited human auditors).
+
+---
+
+## Practical Implementations in this Repository
+
+| Assessment Domain | Demonstrated Repository Module |
+| :--- | :--- |
+| **Domain 2, 3, 4, 10, 14** | [Module 2: Landing Zone Foundation & Shared VPC](../2-gcp-landing-zone-terraform/README.md) |
+| **Domain 3, 4, 7** | [Module 2: Advanced Network (Peering, PSC, DNS & VPN)](../2-gcp-landing-zone-terraform/2-network-infra-phase-2-vpc-peering-psc-dns-vpn/README.md) |
+| **Domain 6** | [Module 1: Reverse Terraform GCS Bucket Import](../1-reverse-terraform/README.md) |
+| **Domain 8, 9, 10, 12, 13, 14** | [Module 3: SecOps Infrastructure & Zero-Trust Cloud Security Testing](../3-secops-infrastructure-terraform-testing/README.md) |

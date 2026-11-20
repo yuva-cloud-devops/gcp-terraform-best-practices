@@ -4,6 +4,15 @@ This directory demonstrates **Reverse Terraform** (also known as *ClickOps-to-Ia
 
 ---
 
+## Navigation & Repository Index
+
+- [Root Repository README](../README.md)
+- [Module 0: Competency & Capability Matrix](../0-gcp-services-by-terraform/Readme.md)
+- [Module 2: Enterprise GCP Landing Zone](../2-gcp-landing-zone-terraform/README.md)
+- [Module 3: SecOps Infrastructure Testing](../3-secops-infrastructure-terraform-testing/README.md)
+
+---
+
 ## Target Resource Details
 
 | Attribute | Value |
@@ -78,7 +87,7 @@ This repository already includes a clean, parameterized [`main.tf`](./main.tf) a
 
 #### Step 1: Initialize Terraform
 ```powershell
-cd d:\GCP-DevOps-WorkSpace\gcp-terraform-best-practices\reverse-terraform
+cd d:\GCP-DevOps-WorkSpace\gcp-terraform-best-practices\1-reverse-terraform
 terraform init
 ```
 
@@ -183,4 +192,3 @@ gcloud beta resource-config bulk-export `
 | `Error 403: Caller does not have storage.buckets.get access` | Missing GCP IAM permissions or wrong active ADC account. | Run `gcloud auth application-default login` with an account that has `Storage Admin` or `Storage Viewer` in `yuvaraj-internal-project`. |
 | Plan shows `~ soft_delete_policy` or `~ uniform_bucket_level_access` change | Default variable values in `terraform.tfvars` differ from the live bucket's current settings. | Check the live values shown on the left side of `->` in `terraform plan` output and update [`terraform.tfvars`](./terraform.tfvars) to match. |
 | `Instance cannot be destroyed` error | A change to an immutable attribute (`name`, `location`, or `project`) is forcing replacement (`-/+`). | Ensure `location = "ASIA-SOUTH1"` (uppercase) and `bucket_name = "gcp-tfplans-instancetemplate-strorage-bucket"` match the live bucket exactly. |
-
