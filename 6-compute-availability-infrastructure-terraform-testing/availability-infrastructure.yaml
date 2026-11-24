@@ -1,0 +1,115 @@
+availability:
+  project_id: "yuvaraj-internal-project"
+  region: "asia-south1"
+
+  tags:
+    environment: "testing"
+    managed_by: "terraform"
+
+  # ============================================================================
+  # PHASE 1: Internal L4 TCP Passthrough Network Load Balancer (ACTIVE FOR TESTING)
+  # Ultra-low latency, original client IP preserved, Active-Passive failover
+  # ============================================================================
+  internal_tcp_lb:
+    name: "nlb-web-app"
+    network: "projects/yuvaraj-internal-project/global/networks/testing-environment-vpc"
+    subnetwork: "projects/yuvaraj-internal-project/regions/asia-south1/subnetworks/testing-environment-private-subnet-mumbai"
+    ports: ["3000"]
+    target_mig: "web-app-regional-mig" # Points directly to Go app Regional MIG
+
+    # Dedicated TCP probe on port 3000
+    health_check:
+      type: "TCP"
+      port: 3000
+      check_interval_sec: 10
+      timeout_sec: 5
+      healthy_threshold: 2
+      unhealthy_threshold: 3
+      logging: true
+
+    # Optional Active-Passive Failover Policy (uncomment when backup MIG is present)
+    # failover_mig: "web-app-failover-mig"
+    # failover_policy:
+    #   failover_ratio: 0.1
+    #   disable_connection_drain_on_failover: false
+    #   drop_traffic_if_unhealthy: true
+
+
+  # # ============================================================================
+  # # PHASE 2: Regional Internal L7 HTTP Load Balancer (Private Envoy)
+  # # (Uncomment this block and comment Phase 1 when ready for Step 2)
+  # # ============================================================================
+  # internal_http_lb:
+  #   name: "ilb-web-app"
+  #   network: "projects/yuvaraj-internal-project/global/networks/testing-environment-vpc"
+  #   subnetwork: "projects/yuvaraj-internal-project/regions/asia-south1/subnetworks/testing-environment-private-subnet-mumbai"
+  #   port: 80
+  #   target_mig: "web-app-regional-mig"
+  #   named_port: "http" # Maps port 80 -> MIG port 3000
+  #   health_check:
+  #     type: "HTTP"
+  #     port: 3000
+  #     request_path: "/"
+  #     check_interval_sec: 10
+  #     timeout_sec: 5
+  #     healthy_threshold: 2
+  #     unhealthy_threshold: 3
+
+  # # ============================================================================
+  # # PHASE 3 & 4: Global External L7 HTTP Load Balancer + Cloud CDN
+  # # (Uncomment this block for Step 3. Toggle enable_cdn: true for Step 4)
+  # # ============================================================================
+  # external_http_lb:
+  #   name: "glb-web-app"
+  #   load_balancing_scheme: "EXTERNAL_MANAGED"
+  #   port: 80
+  #   target_mig: "web-app-regional-mig"
+  #   named_port: "http" # Translates public port 80 -> backend port 3000
+  #   timeout_sec: 30
+  #   connection_draining_timeout_sec: 30
+  #   session_affinity: "NONE"
+  #   locality_lb_policy: "ROUND_ROBIN"
+  #   balancing_mode: "UTILIZATION"
+  #   max_utilization: 0.8
+  #   capacity_scaler: 1.0
+  
+  #   # ------------------------------------------------------------------------
+  #   # STEP 4: Cloud CDN Caching Policy (Toggle true/false)
+  #   # ------------------------------------------------------------------------
+  #   enable_cdn: true # Toggle false for Step 3, true for Step 4
+  #   cdn_policy:
+  #     cache_mode: "CACHE_ALL_STATIC" # CACHE_ALL_STATIC, USE_ORIGIN_HEADERS, FORCE_CACHE_ALL
+  #     default_ttl: 3600
+  #     max_ttl: 86400
+  #     client_ttl: 3600
+  #     negative_caching: true
+  #     serve_while_stale: 86400
+  #     cache_key_policy:
+  #       include_host: true
+  #       include_protocol: true
+  #       include_query_string: true
+  
+  #   # ------------------------------------------------------------------------
+  #   # Auto-Generated Global Health Check probing Go App on Port 3000
+  #   # ------------------------------------------------------------------------
+  #   health_check:
+  #     type: "HTTP"
+  #     port: 3000
+  #     request_path: "/"
+  #     check_interval_sec: 10
+  #     timeout_sec: 5
+  #     healthy_threshold: 2
+  #     unhealthy_threshold: 3
+  #     logging: true
+  
+  #   # ------------------------------------------------------------------------
+  #   # Outlier Detection (Passive Health Checks / Circuit Breaker)
+  #   # ------------------------------------------------------------------------
+  #   outlier_detection:
+  #     consecutive_errors: 5
+  #     base_ejection_time:
+  #       seconds: 30
+  
+  #   log_config:
+  #     enable: true
+  #     sample_rate: 1.0

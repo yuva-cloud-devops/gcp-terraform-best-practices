@@ -56,102 +56,85 @@ compute_infrastructure:
   #       enable_integrity_monitoring: true
   #     service_account:
   #       scopes: ["https://www.googleapis.com/auth/cloud-platform"]
-  #     # Cloud-Init bootstrap script for automated zero-touch provisioning
-  #     cloud_init: |
-  #       #cloud-config
-  #       package_upgrade: true
-  #       packages:
-  #         - nginx
-  #         - curl
-  #         - jq
-  #       write_files:
-  #         - path: /var/www/html/index.html
-  #           content: "<h1>Production Bastion Jump Host - $(hostname)</h1>"
-  #           permissions: "0644"
-  #       runcmd:
-  #         - [ systemctl, restart, nginx ]
+  #     # External Shell Bootstrap Script file (passes shell script instead of inline)
+  #     # cloud_init_file: "scripts/bastion-bootstrap.sh"
+
+  # ----------------------------------------------------------------------------
+  # 3. Standalone VM Instances (From Template or Custom, with Schedules & Public IP)
+  # ----------------------------------------------------------------------------
+  vm_instances:
+    # # Example A: Bastion Jump Host created from template with Public IP attached
+    # instance-template-vm:
+    #   instance_template: "web-app-template"
+    #   zone: "asia-south1-a"
+    #   tags: ["allow-iap-ssh", "http-server"]
+    #   # Public IP Option: Set enable_public_ip: true for Ephemeral Public IP
+    #   # Or static_public_ip: true to auto-reserve a dedicated Regional Static External IP
+    #   enable_public_ip: true
+    #   # Attach start/stop instance schedule
+    #   instance_schedule: "business-hours-schedule"
+    #   # Attach disk snapshot schedule
+    #   snapshot_schedule: "daily-snapshot-schedule"
+
+    # Example B: Standalone custom VM with its own shell script bootstrap (Private only)
+    custom-standalone-testing-vm:
+      machine_type: "e2-micro"
+      zone: "asia-south1-a"
+      tags: ["allow-iap-ssh"]
+      # enable_public_ip: false (default is false - purely private VM)
+      boot_disk:
+        source_image: "projects/debian-cloud/global/images/family/debian-12"
+        disk_type: "pd-standard"
+        disk_size_gb: 15
+      # External Shell Bootstrap Script file (passes shell script instead of inline)
+      cloud_init_file: "scripts/custom-vm-bootstrap.sh"
+      instance_schedule: "business-hours-schedule"
+      snapshot_schedule: "daily-snapshot-schedule"
 
   # # ----------------------------------------------------------------------------
-  # # 3. Standalone VM Instances (From Template or Custom, with Schedules & Public IP)
+  # # Phase 2 Components (Health Checks, Regional MIG & Autoscaling)
   # # ----------------------------------------------------------------------------
-  # vm_instances:
-  #   # Example A: Bastion Jump Host created from template with Public IP attached
-  #   bastion-jump-host:
+  # health_checks:
+  #   web-app-health-check:
+  #     type: "HTTP"
+  #     port: 3000 # App is listening on port 3000
+  #     request_path: "/"
+  #     check_interval_sec: 10
+  #     timeout_sec: 5
+  #     healthy_threshold: 2
+  #     unhealthy_threshold: 3
+  #     enable_logging: false
+
+  # managed_instance_groups:
+  #   web-app-regional-mig:
+  #     type: "REGIONAL"
+  #     region: "asia-south1"
+  #     base_instance_name: "web-app"
   #     instance_template: "web-app-template"
-  #     zone: "asia-south1-a"
-  #     tags: ["allow-iap-ssh"]
-  #     # Public IP Option: Set enable_public_ip: true for Ephemeral Public IP
-  #     # Or static_public_ip: true to auto-reserve a dedicated Regional Static External IP
-  #     enable_public_ip: true
-  #     # Attach start/stop instance schedule
-  #     instance_schedule: "business-hours-schedule"
-  #     # Attach disk snapshot schedule
-  #     snapshot_schedule: "daily-snapshot-schedule"
+  #     target_size: 2
+  #     auto_healing_policies:
+  #       health_check: "web-app-health-check"
+  #       initial_delay_sec: 300
+  #     named_ports:
+  #       - name: "http"
+  #         port: 3000
+  #     update_policy:
+  #       type: "PROACTIVE"
+  #       minimal_action: "REPLACE"
+  #       max_surge_fixed: 3 # Equal to number of zones in region (asia-south1: a, b, c)
+  #       max_unavailable_fixed: 0
+  #       replacement_method: "SUBSTITUTE"
 
-  #   # Example B: Standalone custom VM with its own cloud-init bootstrap (Private only)
-  #   custom-standalone-vm:
-  #     machine_type: "e2-micro"
-  #     zone: "asia-south1-a"
-  #     tags: ["allow-iap-ssh"]
-  #     # enable_public_ip: false (default is false - purely private VM)
-  #     boot_disk:
-  #       source_image: "projects/debian-cloud/global/images/family/debian-12"
-  #       disk_type: "pd-standard"
-  #       disk_size_gb: 15
-  #     cloud_init: |
-  #       #cloud-config
-  #       users:
-  #         - name: opsadmin
-  #           groups: sudo
-  #           shell: /bin/bash
-  #           sudo: ['ALL=(ALL) NOPASSWD:ALL']
-  #       packages:
-  #         - htop
-  #         - net-tools
-  #     instance_schedule: "business-hours-schedule"
-  #     snapshot_schedule: "daily-snapshot-schedule"
-
-  # # ----------------------------------------------------------------------------
-  # # Phase 2 Components (Commented out for Standalone VM testing phase)
-  # # ----------------------------------------------------------------------------
-  # # health_checks:
-  # #   web-app-health-check:
-  # #     type: "HTTP"
-  # #     port: 80
-  # #     request_path: "/"
-  # #     check_interval_sec: 10
-  # #     timeout_sec: 5
-  # #     healthy_threshold: 2
-  # #     unhealthy_threshold: 3
-  # #     enable_logging: false
-
-  # # managed_instance_groups:
-  # #   web-app-regional-mig:
-  # #     type: "REGIONAL"
-  # #     region: "asia-south1"
-  # #     base_instance_name: "web-app"
-  # #     instance_template: "web-app-template"
-  # #     target_size: 2
-  # #     auto_healing_policies:
-  # #       health_check: "web-app-health-check"
-  # #       initial_delay_sec: 300
-  # #     update_policy:
-  # #       type: "PROACTIVE"
-  # #       minimal_action: "REPLACE"
-  # #       max_surge_fixed: 1
-  # #       max_unavailable_fixed: 0
-  # #       replacement_method: "SUBSTITUTE"
-
-  # # autoscaling_policies:
-  # #   web-app-autoscaler:
-  # #     mig_name: "web-app-regional-mig"
-  # #     min_replicas: 1
-  # #     max_replicas: 5
-  # #     cooldown_period: 60
-  # #     cpu_target: 0.70
-  # #     scaling_schedules:
-  # #       - name: "business-hours-spike"
-  # #         min_required_replicas: 2
-  # #         schedule: "0 9 * * 1-5"
-  # #         time_zone: "Asia/Kolkata"
-  # #         duration_sec: 32400 # 9 hours
+  # autoscaling_policies:
+  #   web-app-autoscaler:
+  #     mig_name: "web-app-regional-mig"
+  #     min_replicas: 2
+  #     max_replicas: 5
+  #     cooldown_period: 60
+  #     cpu_target: 0.70
+  #     scaling_schedules:
+  #       - name: "business-hours-spike"
+  #         min_required_replicas: 2
+  #         schedule: "0 9 * * 1-5"
+  #         time_zone: "Asia/Kolkata"
+  #         duration_sec: 32400 # 9 hours

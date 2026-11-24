@@ -18,15 +18,9 @@ provider "google" {
 
 
 module "compute" {
-  # Local source for direct testing and seamless updates:
-  source = "../../gcp-terraform-custom-modules/compute-infrastructure"
-
-  # Production Git source (uncomment when tested and pushed to remote):
-  # source = "git::https://github.com/yuva-cloud-devops/gcp-terraform-custom-modules.git//compute-infrastructure?ref=main"
-
+  source           = "git::https://github.com/yuva-cloud-devops/gcp-terraform-custom-modules.git//compute-infrastructure?ref=main"
   config_file_path = "${path.module}/compute-infrastructure.yaml"
 }
-
 
 
 output "compute_summary" {
@@ -63,3 +57,45 @@ output "compute_policies" {
   description = "Created disk snapshot and VM start/stop resource policies"
   value       = module.compute.compute_policies
 }
+
+
+
+
+
+
+module "availability" {
+  # Local source for direct testing and seamless updates:
+  source           = "git::https://github.com/yuva-cloud-devops/gcp-terraform-custom-modules.git//availability-infrastructure?ref=main"
+  config_file_path = "${path.module}/availability-infrastructure.yaml"
+
+  # Seamlessly passes instance groups created by compute module to the LB backend
+  mig_backend_groups = {
+    for k, v in module.compute.managed_instance_groups : k => v.instance_group
+  }
+}
+
+output "availability_summary" {
+  description = "Summary counts of all provisioned availability infrastructure components"
+  value       = module.availability.availability_summary
+}
+
+output "internal_tcp_lbs" {
+  description = "Details of provisioned Regional Internal TCP Load Balancers"
+  value       = module.availability.internal_tcp_lbs
+}
+
+output "internal_http_lbs" {
+  description = "Details of provisioned Regional Internal HTTP Load Balancers"
+  value       = module.availability.internal_http_lbs
+}
+
+output "global_lb_external_ip" {
+  description = "Public Global Anycast IPv4 address for the External Application Load Balancer"
+  value       = module.availability.primary_external_ip
+}
+
+output "external_http_lbs" {
+  description = "Details of provisioned Global External Application Load Balancers"
+  value       = module.availability.external_http_lbs
+}
+
