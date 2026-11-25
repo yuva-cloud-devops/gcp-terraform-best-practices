@@ -225,7 +225,12 @@ For detailed troubleshooting, see [`0-bootstrap/2-bootstrap-project.md`](./0-boo
 
 ---
 
-## Next Steps: Security Operations & Zero-Trust
+## Next Steps: Core Infrastructure & Testing Modules
 
-After the Landing Zone networking layer is established, proceed to **Module 3: SecOps Infrastructure & Zero-Trust Cloud Security Testing**:
-- [Module 3: SecOps Infrastructure Testing](../3-secops-infrastructure-terraform-testing/README.md)
+After the Landing Zone networking layer is established, explore the specialized testing modules:
+- [Module 3: SecOps Infrastructure & Zero-Trust Security Testing](../3-secops-infrastructure-terraform-testing/README.md)
+- [Module 4: Storage Infrastructure Testing](../4-storage-infrastructure-terraform-testing/README.md)
+- [Module 5: Database Infrastructure Testing](../5-database-infrastructure-terraform-testing/README.md)
+- [Module 6: Compute & Availability Testing](../6-compute-availability-infrastructure-terraform-testing/README.md)
+- [Module 7: Containers Infrastructure Testing (GKE Autopilot)](../7-containers-infrastructure-terraform-testing/README.md)
+- [Module 8: Serverless Infrastructure Testing](../8-serverless-infrastructure-terraform-testing/README.md)

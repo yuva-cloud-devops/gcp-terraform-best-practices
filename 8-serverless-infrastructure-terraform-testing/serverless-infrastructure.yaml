@@ -1,0 +1,168 @@
+# ==============================================================================
+# Serverless Infrastructure Configuration (YAML Specification)
+# Modern 2024+ Serverless with Direct VPC Egress & Internal/External Options
+# ==============================================================================
+
+serverless_infrastructure:
+  project_id: "yuvaraj-internal-project"
+  region: "asia-south1"
+  network: "projects/yuvaraj-internal-project/global/networks/testing-environment-vpc"
+  subnetwork: "projects/yuvaraj-internal-project/regions/asia-south1/subnetworks/testing-environment-private-subnet-mumbai"
+  
+  tags:
+    environment: "dev"
+    managed-by: "terraform"
+    module: "serverless-infrastructure"
+
+  vpc_access:
+    egress_mode: "PRIVATE_RANGES_ONLY"
+
+  # ----------------------------------------------------------------------------
+  # 1. Cloud Run Services (v2 API)
+  # ----------------------------------------------------------------------------
+  cloud_run_services:
+    # --- Public External HTTP Service ---
+    public-api-service:
+      name: "public-api-service"
+      description: "Public-facing HTTP API service accessible from the internet"
+      image: "asia-south1-docker.pkg.dev/yuvaraj-internal-project/app-docker-repo/nginx:v1.0"
+      port: 80
+      ingress: "INGRESS_TRAFFIC_ALL"
+      allow_unauthenticated: false
+      invoker_members:
+        - "user:yuvaraj.k@quadrasystems.net"
+      concurrency: 80
+      scaling:
+        min_instances: 0
+        max_instances: 5
+      resources:
+        limits:
+          cpu: "1"
+          memory: "512Mi"
+      env:
+        APP_ENV: "production"
+        LOG_LEVEL: "info"
+
+    # --- Internal Private Microservice (Direct VPC Egress) ---
+    private-backend-service:
+      name: "private-backend-service"
+      description: "Internal-only microservice isolated inside VPC via Direct VPC Egress"
+      image: "asia-south1-docker.pkg.dev/yuvaraj-internal-project/app-docker-repo/nginx:v1.0"
+      port: 80
+      ingress: "INGRESS_TRAFFIC_INTERNAL_ONLY"
+      allow_unauthenticated: false
+      concurrency: 50
+      scaling:
+        min_instances: 0
+        max_instances: 3
+      resources:
+        limits:
+          cpu: "1"
+          memory: "512Mi"
+      direct_vpc_egress:
+        enabled: true
+        subnetwork: "projects/yuvaraj-internal-project/regions/asia-south1/subnetworks/testing-environment-private-subnet-mumbai"
+        egress_mode: "PRIVATE_RANGES_ONLY"
+      env:
+        SERVICE_ROLE: "backend"
+        DB_HOST: "10.10.1.15"
+      invoker_members:
+      - "serviceAccount:wf-test-private-workflow@yuvaraj-internal-project.iam.gserviceaccount.com"
+
+  # ----------------------------------------------------------------------------
+  # 2. Event Orchestration (Cloud Workflows)
+  # ----------------------------------------------------------------------------
+  cloud_workflows:
+    test-private-workflow:
+      description: "Invokes the private Cloud Run backend"
+      deletion_protection: false
+      source_contents: |
+        main:
+          steps:
+            - call_private_service:
+                call: http.get
+                args:
+                  url: "https://private-backend-service-s5jg5ocgoa-el.a.run.app"
+                  auth:
+                    type: OIDC
+                result: backend_response
+            - return_data:
+                return: ${backend_response.body}
+
+  # ----------------------------------------------------------------------------
+  # 3. Cloud Run Jobs (v2 API for Batch Processing & DB Migrations)
+  # ----------------------------------------------------------------------------
+  cloud_run_jobs:
+    db-migration-job:
+      name: "db-migration-job"
+      description: "Batch run-to-completion job for DB migrations with Direct VPC Egress"
+      image: "asia-south1-docker.pkg.dev/yuvaraj-internal-project/app-docker-repo/nginx:v1.0"
+      task_count: 1
+      parallelism: 1
+      max_retries: 2
+      timeout: "300s"
+      resources:
+        limits:
+          cpu: "1"
+          memory: "512Mi"
+      direct_vpc_egress:
+        enabled: true
+        subnetwork: "projects/yuvaraj-internal-project/regions/asia-south1/subnetworks/testing-environment-private-subnet-mumbai"
+        egress_mode: "PRIVATE_RANGES_ONLY"
+      env:
+        ACTION: "migrate"
+
+  # ============================================================================
+  # 4. Cloud Functions (2nd Gen API)
+  # ============================================================================
+  cloud_functions:
+    order-event-function:
+      runtime: "python311"
+      entry_point: "hello_serverless"
+      source_archive_bucket: "yuvaraj-internal-serverless-sources-mumbai"
+      source_archive_object: "functions/function-source.zip"
+      ingress: "ALLOW_ALL"
+      allow_unauthenticated: false
+      invoker_members:
+        - "user:yuvaraj.k@quadrasystems.net"   # Your gcloud email
+      available_memory: "256M"
+      timeout_seconds: 60
+      min_instances: 0
+      max_instances: 3
+
+  # ============================================================================
+  # 5. Async Queues & Scheduler
+  # ============================================================================
+  cloud_tasks_queues:
+    order-processing-queue:
+      max_dispatches_per_second: 50
+      max_concurrent_dispatches: 10
+      max_burst_size: 100
+      max_attempts: 5
+
+  cloud_scheduler_jobs:
+    nightly-db-cleanup:
+      schedule: "0 2 * * *"       # Every night at 2:00 AM
+      time_zone: "Asia/Kolkata"
+      http_target:
+        uri: "https://public-api-service-s5jg5ocgoa-el.a.run.app"
+        http_method: "GET"
+        oidc_token:
+          service_account_email: "run-public-api-service@yuvaraj-internal-project.iam.gserviceaccount.com"
+
+
+  # ============================================================================
+  # 5. Event Orchestration (Eventarc Triggers)
+  # ============================================================================
+  eventarc_triggers:
+    storage-event-trigger:
+      location: "asia-south1"
+      destination:
+        cloud_run_service: "public-api-service"
+        path: "/"
+      service_account: "run-public-api-service@yuvaraj-internal-project.iam.gserviceaccount.com"
+      event_filters:
+        - attribute: "type"
+          value: "google.cloud.storage.object.v1.finalized"
+        - attribute: "bucket"
+          value: "yuvaraj-internal-serverless-sources-mumbai"

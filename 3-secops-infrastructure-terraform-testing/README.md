@@ -189,3 +189,8 @@ terraform apply
 - [Module 0: Competency & Capability Matrix](../0-gcp-services-by-terraform/Readme.md)
 - [Module 1: Reverse Terraform (Import Guide)](../1-reverse-terraform/README.md)
 - [Module 2: Enterprise GCP Landing Zone](../2-gcp-landing-zone-terraform/README.md)
+- [Module 4: Storage Infrastructure Testing](../4-storage-infrastructure-terraform-testing/README.md)
+- [Module 5: Database Infrastructure Testing](../5-database-infrastructure-terraform-testing/README.md)
+- [Module 6: Compute & Availability Testing](../6-compute-availability-infrastructure-terraform-testing/README.md)
+- [Module 7: Containers Infrastructure Testing](../7-containers-infrastructure-terraform-testing/README.md)
+- [Module 8: Serverless Infrastructure Testing](../8-serverless-infrastructure-terraform-testing/README.md)
