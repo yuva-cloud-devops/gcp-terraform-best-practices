@@ -1,8 +1,8 @@
 # Module 3: SecOps Infrastructure & Zero-Trust Cloud Security Testing
 
-This module implements an enterprise-grade, defense-in-depth **Security Operations (SecOps)** and **Zero-Trust Architecture** on Google Cloud Platform using Terraform. 
+This module implements an enterprise-grade, defense-in-depth **Security Operations (SecOps)**, **Zero-Trust Architecture**, and **Security Observability Platform** on Google Cloud Platform using Terraform. 
 
-Driven declaratively by clean YAML configurations, it leverages reusable, production-ready modules from the custom module registry [`yuva-cloud-devops/gcp-terraform-custom-modules`](https://github.com/yuva-cloud-devops/gcp-terraform-custom-modules) to provision and test 7 foundational security engineering domains.
+Driven declaratively by clean YAML configurations, it leverages reusable, production-ready modules from the custom module registry [`yuva-cloud-devops/gcp-terraform-custom-modules`](https://github.com/yuva-cloud-devops/gcp-terraform-custom-modules) to provision and test 9 foundational security and observability engineering domains.
 
 ---
 
@@ -10,7 +10,7 @@ Driven declaratively by clean YAML configurations, it leverages reusable, produc
 
 ```mermaid
 flowchart TD
-    subgraph SecOps["SecOps & Zero-Trust Architecture (yuvaraj-internal-project)"]
+    subgraph SecOps["SecOps & Observability Architecture (yuvaraj-internal-project)"]
         
         subgraph Layer1["1. Identity & Zero-Trust Access"]
             WIF["Workload Identity Federation\n(GitHub Actions OIDC)"]
@@ -44,14 +44,26 @@ flowchart TD
             CAI["Cloud Asset Inventory (CAI)\n(Real-Time Resource Drift Feeds)"]
         end
 
-        subgraph Layer7["7. Audit Logging & Compliance"]
+        subgraph Layer7["7. Audit Logging & Compliance Sinks"]
             Audit["Data Access Audit Logs\n(Admin, Read, Write)"]
             Sinks["Centralized Log Sinks\n(GCS WORM, BigQuery, Pub/Sub SIEM)"]
             CIS["CIS Benchmark Security Metrics\n(Controls 2.4 - 2.12)"]
         end
+
+        subgraph Layer8["8. Monitoring & Incident Alerting"]
+            Channels["Notification Channels (Email, Slack, PagerDuty)"]
+            CISAlerts["CIS Benchmark v3 Alert Policies (2.4 - 2.12)"]
+            OpAlerts["Operational Metric Thresholds (5xx Errors)"]
+        end
+
+        subgraph Layer9["9. Observability & Synthetic Uptime"]
+            Probes["Multi-Region Synthetic Uptime Probes (USA, Europe, Asia)"]
+            SSLExpiry["Automated SSL/TLS Certificate Expiry Alerts"]
+            Dashboards["Production SRE Dashboards (SecOps, Serverless, Network)"]
+        end
     end
 
-    Layer1 --> Layer2 --> Layer3 --> Layer4 --> Layer5 --> Layer6 --> Layer7
+    Layer1 --> Layer2 --> Layer3 --> Layer4 --> Layer5 --> Layer6 --> Layer7 --> Layer8 --> Layer9
 ```
 
 ---
@@ -67,6 +79,8 @@ flowchart TD
 | **5** | [**`pki-data-security/`**](./pki-data-security/README.md) | Certificate Authority Service (CAS), Cert Manager, Cloud DLP | Internal Private CA hierarchies for mTLS, Certificate Manager maps, and Cloud DLP automated PII scanning & character masking templates. |
 | **6** | [**`threat-posture/`**](./threat-posture/README.md) | Security Command Center (SCC v2), Cloud Asset Inventory | Real-time Pub/Sub alerts for active High/Critical SCC findings, and Cloud Asset Inventory event feeds tracking infrastructure configuration drift. |
 | **7** | [**`zero-trust-security/`**](./zero-trust-security/README.md) | Workload Identity Federation (WIF), IAM, IAP | Keyless CI/CD authentication via GitHub Actions OIDC (zero static JSON keys), and Identity-Aware Proxy (IAP) TCP forwarding for bastion-less VM access. |
+| **8** | [**`monitoring-alerting/`**](./monitoring-alerting/README.md) | Cloud Monitoring, Notification Channels | Multi-project metric scopes, notification channels (Email/PagerDuty), automated incident alerting for CIS GCP Benchmark controls 2.4–2.12, and operational 5xx error thresholds. |
+| **9** | [**`dashboards-uptime/`**](./dashboards-uptime/README.md) | Cloud Monitoring Dashboards, Synthetic Uptime Checks | Multi-region synthetic HTTPS uptime checks (USA, Europe, Asia), automated SSL/TLS expiry alerts, and pre-packaged production dashboards for SecOps, Serverless, and Networks. |
 
 ---
 
@@ -107,10 +121,20 @@ flowchart TD
 │   ├── threat-posture.yaml                         # YAML Config (SCC Filters, Pub/Sub & Feeds)
 │   └── main.tf                                     # Module Call (threat-posture-infra)
 │
-└── zero-trust-security/                            # Domain 7: Zero-Trust Identity & Access
-    ├── README.md                                   # WIF Keyless CI/CD & IAP Tunneling Guide
-    ├── zero-trust.yaml                             # YAML Config (WIF Pool, Provider, SA & IAP)
-    └── main.tf                                     # Module Call (zero-trust-security-infra)
+├── zero-trust-security/                            # Domain 7: Zero-Trust Identity & Access
+│   ├── README.md                                   # WIF Keyless CI/CD & IAP Tunneling Guide
+│   ├── zero-trust.yaml                             # YAML Config (WIF Pool, Provider, SA & IAP)
+│   └── main.tf                                     # Module Call (zero-trust-security-infra)
+│
+├── monitoring-alerting/                             # Domain 8: Monitoring & Incident Alerting
+│   ├── README.md                                   # Channels, CIS Alerts & Metric Thresholds Guide
+│   ├── monitoring-alerting.yaml                     # YAML Config (Scopes, Notification Channels & Alerts)
+│   └── main.tf                                     # Module Call (monitoring-alerting-infra)
+│
+└── dashboards-uptime/                               # Domain 9: Dashboards & Synthetic Uptime
+    ├── README.md                                   # Synthetic Probes, SSL Alerts & Dashboards Guide
+    ├── dashboards-uptime.yaml                       # YAML Config (Uptime Checks, SSL Alerts & Dashboards)
+    └── main.tf                                     # Module Call (dashboards-uptime-infra)
 ```
 
 ---
@@ -129,6 +153,8 @@ flowchart TD
    Container workloads deployed to Kubernetes must pass cryptographic attestation checks (via Binary Authorization and Grafeas Container Analysis) before admission into production clusters.
 6. **Defense in Depth**:
    Combines perimeter edge defenses (Cloud Armor WAF, Cloud IDS, VPC-SC) with internal data governance (Customer-Managed Encryption Keys in KMS, Secret Manager, Cloud DLP inspection and masking).
+7. **Automated Incident Dispatch & Observability**:
+   Binds security logs directly to real-time incident alert policies (CIS Benchmark v3 2.4–2.12), proactive synthetic uptime probes, and curated SRE health dashboards.
 
 ---
 
@@ -151,8 +177,8 @@ gcloud auth application-default set-quota-project yuvaraj-internal-project
 To test any security submodule:
 
 ```powershell
-# Navigate into the desired submodule directory (e.g., container-security)
-cd d:\GCP-DevOps-WorkSpace\gcp-terraform-best-practices\3-secops-infrastructure-terraform-testing\container-security
+# Navigate into the desired submodule directory (e.g., monitoring-alerting)
+cd d:\GCP-DevOps-WorkSpace\gcp-terraform-best-practices\3-secops-infrastructure-terraform-testing\monitoring-alerting
 
 # Initialize Terraform and download the custom module from GitHub
 terraform init
@@ -174,12 +200,14 @@ terraform apply
 | Standard / Framework | Control Area | Implemented Submodule |
 | :--- | :--- | :--- |
 | **CIS GCP Benchmark v3** | 2.4 - 2.12 Logging & Monitoring | [`audit-compliance/`](./audit-compliance/README.md) |
+| **CIS GCP Benchmark v3** | 2.4 - 2.12 Incident Alert Policies | [`monitoring-alerting/`](./monitoring-alerting/README.md) |
 | **NIST SP 800-190** | Container Build & Deploy Security | [`container-security/`](./container-security/README.md) |
 | **NIST SP 800-57** | Cryptographic Key Management | [`crypto-secrets/`](./crypto-secrets/README.md) |
 | **OWASP Top 10 (2021)** | Injection & Broken Access Control | [`edge-security/`](./edge-security/README.md) |
 | **GDPR / CCPA / HIPAA** | PII Identification & Protection | [`pki-data-security/`](./pki-data-security/README.md) |
 | **MITRE ATT&CK Cloud** | Threat Detection & Drift Monitoring | [`threat-posture/`](./threat-posture/README.md) |
 | **NIST SP 800-207** | Zero Trust Architecture | [`zero-trust-security/`](./zero-trust-security/README.md) |
+| **Google SRE Best Practices** | Synthetic Probing, SSL & Dashboards | [`dashboards-uptime/`](./dashboards-uptime/README.md) |
 
 ---
 

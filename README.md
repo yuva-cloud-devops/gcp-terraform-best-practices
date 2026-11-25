@@ -1,6 +1,6 @@
 # Google Cloud Platform (GCP) Terraform Best Practices, Landing Zone & Core Infrastructure
 
-A production-grade, modular repository demonstrating **Google Cloud Platform (GCP) Infrastructure-as-Code (IaC)** using HashiCorp Terraform. This repository covers end-to-end cloud engineering competencies: from architectural capability assessment and reverse-engineering ClickOps resources to deploying a multi-tier enterprise Landing Zone, defense-in-depth SecOps with Zero-Trust controls, and fully automated testing harnesses for Storage, Databases, Compute & High Availability, Containers (GKE Autopilot), and Modern Serverless.
+A production-grade, modular repository demonstrating **Google Cloud Platform (GCP) Infrastructure-as-Code (IaC)** using HashiCorp Terraform. This repository covers end-to-end cloud engineering competencies: from architectural capability assessment and reverse-engineering ClickOps resources to deploying a multi-tier enterprise Landing Zone, defense-in-depth SecOps & Observability with Zero-Trust controls, and fully automated testing harnesses for Storage, Databases, Compute & High Availability, Containers (GKE Autopilot), and Modern Serverless.
 
 ---
 
@@ -11,7 +11,7 @@ flowchart TD
     Root["GCP Terraform Best Practices Repository"] --> Mod0["0-gcp-services-by-terraform\n(Competency & Automation Matrix)"]
     Root --> Mod1["1-reverse-terraform\n(Reverse IaC & Resource Import)"]
     Root --> Mod2["2-gcp-landing-zone-terraform\n(Enterprise Landing Zone)"]
-    Root --> Mod3["3-secops-infrastructure-terraform-testing\n(SecOps & Zero-Trust Cloud Security)"]
+    Root --> Mod3["3-secops-infrastructure-terraform-testing\n(SecOps, Zero-Trust & Observability)"]
     Root --> Mod4["4-storage-infrastructure-terraform-testing\n(GCS, Disks, Snapshots & Filestore NFS)"]
     Root --> Mod5["5-database-infrastructure-terraform-testing\n(Cloud SQL, AlloyDB, Redis, Firestore, Spanner, Bigtable)"]
     Root --> Mod6["6-compute-availability-infrastructure-terraform-testing\n(MIG, Autoscaling, L4 NLB, L7 ILB & Global ALB + CDN)"]
@@ -30,6 +30,8 @@ flowchart TD
     Mod3 --> Sec5["pki-data-security\n(Private CAS, Cert Maps & Cloud DLP)"]
     Mod3 --> Sec6["threat-posture\n(SCC v2 Alerts & Asset Drift Feeds)"]
     Mod3 --> Sec7["zero-trust-security\n(GitHub Actions WIF & IAP Tunneling)"]
+    Mod3 --> Sec8["monitoring-alerting\n(Cloud Monitoring & CIS Alert Policies)"]
+    Mod3 --> Sec9["dashboards-uptime\n(Synthetic Uptime & SRE Dashboards)"]
 ```
 
 ```text
@@ -55,7 +57,7 @@ gcp-terraform-best-practices/
 │   ├── 2-network-infra-phase-1-vpc-shared-vpc-firewall-policy/      # Phase 2: Network Phase 1 (Shared VPC, Cloud NAT, Hierarchical Firewalls)
 │   └── 2-network-infra-phase-2-vpc-peering-psc-dns-vpn/             # Phase 3: Network Phase 2 (VPC Peering, PSC, Cloud DNS, HA VPN)
 │
-├── 3-secops-infrastructure-terraform-testing/                       # Module 3: SecOps & Zero-Trust Cloud Security
+├── 3-secops-infrastructure-terraform-testing/                       # Module 3: SecOps, Zero-Trust & Observability
 │   ├── README.md                                                    # Master SecOps Architecture & Testing Index
 │   ├── audit-compliance/                                            # Domain 1: Audit Logging, CIS Benchmarks & BigQuery Sinks
 │   ├── container-security/                                          # Domain 2: Binary Authorization & Grafeas Attestations
@@ -63,7 +65,9 @@ gcp-terraform-best-practices/
 │   ├── edge-security/                                               # Domain 4: Cloud Armor WAF, Cloud IDS & VPC Service Controls
 │   ├── pki-data-security/                                           # Domain 5: Private CAS, Certificate Manager & Cloud DLP
 │   ├── threat-posture/                                              # Domain 6: SCC v2 Finding Notifications & Asset Drift Feeds
-│   └── zero-trust-security/                                         # Domain 7: GitHub Actions WIF & IAP TCP Forwarding
+│   ├── zero-trust-security/                                         # Domain 7: GitHub Actions WIF & IAP TCP Forwarding
+│   ├── monitoring-alerting/                                         # Domain 8: Cloud Monitoring, Notification Channels & CIS Alerts
+│   └── dashboards-uptime/                                           # Domain 9: Synthetic Uptime Checks, SSL Alerts & Dashboards
 │
 ├── 4-storage-infrastructure-terraform-testing/                      # Module 4: Cloud Storage Infrastructure
 │   ├── README.md                                                    # Object Storage, Disks, Snapshots & Filestore Architecture
@@ -135,8 +139,8 @@ A modular, scalable, multi-project Landing Zone deployed in progressive phases:
 
 ---
 
-### [Module 3: SecOps Infrastructure & Zero-Trust Cloud Security Testing](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/README.md)
-An enterprise defense-in-depth security testing suite built on reusable Terraform modules from [`yuva-cloud-devops/gcp-terraform-custom-modules`](https://github.com/yuva-cloud-devops/gcp-terraform-custom-modules), implementing 7 core security domains:
+### [Module 3: SecOps Infrastructure, Zero-Trust & Observability Testing](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/README.md)
+An enterprise defense-in-depth security testing suite built on reusable Terraform modules from [`yuva-cloud-devops/gcp-terraform-custom-modules`](https://github.com/yuva-cloud-devops/gcp-terraform-custom-modules), implementing 9 core security and observability domains:
 1. [**Audit & Compliance (`audit-compliance/`)**](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/audit-compliance/README.md): Centralized log sinks, immutable GCS cold storage (WORM 365d), BigQuery threat analytics datasets, Pub/Sub SIEM streams, and CIS Benchmark controls 2.4–2.12.
 2. [**Container Security (`container-security/`)**](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/container-security/README.md): Grafeas vulnerability attestation notes, Binary Authorization attestors, and GKE deploy-time admission policies.
 3. [**Cryptography & Secrets (`crypto-secrets/`)**](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/crypto-secrets/README.md): Cloud KMS KeyRings, Customer-Managed Encryption Keys (CMEK) with automated 90-day rotation, and CMEK-encrypted Secret Manager containers.
@@ -144,6 +148,8 @@ An enterprise defense-in-depth security testing suite built on reusable Terrafor
 5. [**PKI & Sensitive Data (`pki-data-security/`)**](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/pki-data-security/README.md): Private CAS DevOps CA pools, 10-year Root CAs, Certificate Manager maps, and Cloud DLP automated PII scanning & masking templates.
 6. [**Threat Posture (`threat-posture/`)**](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/threat-posture/README.md): Security Command Center (SCC v2) real-time notifications for High/Critical active findings and Cloud Asset Inventory (CAI) feeds for drift detection.
 7. [**Zero-Trust Security (`zero-trust-security/`)**](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/zero-trust-security/README.md): Workload Identity Federation (WIF) with GitHub Actions OIDC (eliminating static JSON keys) and Identity-Aware Proxy (IAP) TCP tunneling for zero-public-IP VM administration.
+8. [**Monitoring & Incident Alerting (`monitoring-alerting/`)**](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/monitoring-alerting/README.md): Cloud Monitoring workspace scoping, notification channels (email, PagerDuty), automated CIS GCP Benchmark v3 security alert policies (2.4–2.12), and operational metric threshold alerts (Cloud Run 5xx error spikes).
+9. [**Dashboards & Synthetic Uptime (`dashboards-uptime/`)**](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/dashboards-uptime/README.md): Multi-region synthetic HTTPS uptime checks (USA, Europe, Asia Pacific), SSL/TLS certificate expiry warnings (< 30 days), and production SRE dashboards (SecOps, Serverless, and Network perimeter health).
 
 👉 **Read the SecOps Guide**: [3-secops-infrastructure-terraform-testing/README.md](file:///d:/GCP-DevOps-WorkSpace/gcp-terraform-best-practices/3-secops-infrastructure-terraform-testing/README.md)
 
@@ -234,6 +240,8 @@ Modern 2024+ serverless application platform with zero-connector VPC networking:
 | **SecOps: Cryptography** | Cloud KMS / Secret Manager | `app-keyring/app-data-key` (90d rotation) / `app-db-password` (CMEK) | `yuvaraj-internal-project` |
 | **SecOps: Edge & WAF** | Cloud Armor / Cloud IDS | `minimal-waf-policy` (OWASP SQLi) / `minimal-ids-endpoint` (`asia-south1-a`)| `yuvaraj-internal-project` |
 | **SecOps: Zero Trust** | WIF Pool / IAP Firewall | `pool-github-actions` (GitHub OIDC) / `allow-iap-tcp-ingress` (TCP 22, 3389) | Keyless Authentication |
+| **SecOps: Alerting** | Cloud Monitoring / Channels | `secops-email-channel` / CIS GCP Benchmark v3 Alerts (Controls 2.4 - 2.12) | `yuvaraj-internal-project` |
+| **SecOps: Dashboards & Uptime** | Synthetic Probes / SRE Views | `public-web-uptime` (USA, Europe, Asia) / 3 Dashboards (SecOps, Serverless, Net) | `yuvaraj-internal-project` |
 | **Module 4: Storage** | GCS / Regional Disks / Filestore | `secops-demo-app-bucket-9862` / `secops-demo-ha-disk` / `secops-demo-nfs-share` | `yuvaraj-internal-project` |
 | **Module 5: Database** | Cloud SQL / AlloyDB / Redis / Spanner | `secops-demo-pg-db` / `secops-demo-alloydb` / `secops-demo-redis` / `secops-demo-spanner` | `yuvaraj-internal-project` |
 | **Module 6: Compute & HA** | MIG / L4 NLB / L7 ALB + CDN | `web-app-regional-mig` / `nlb-web-app` / `glb-web-app` | `yuvaraj-internal-project` |
@@ -247,12 +255,13 @@ Modern 2024+ serverless application platform with zero-connector VPC networking:
 1. **Remote State Security**: Remote state is stored in GCS with Uniform Bucket-Level Access (UBLA), Object Versioning, and Soft Delete retention policies.
 2. **Zero Default Networks**: Enforced organizational policy `compute.skipDefaultNetworkCreation` so GCP never creates default VPCs or unhardened firewall rules.
 3. **Least Privilege & Deprivileged SAs**: Default Compute Engine service accounts have their Editor role automatically stripped; dedicated workload identities are provisioned per project.
-4. **Declarative Configuration**: Infrastructure hierarchies, networking, firewalls, compute, databases, and serverless are defined in clean YAML specifications (`foundation.yaml`, `network-config.yaml`, `storage-infrastructure.yaml`, `database-infrastructure.yaml`, etc.).
+4. **Declarative Configuration**: Infrastructure hierarchies, networking, firewalls, compute, databases, serverless, and observability are defined in clean YAML specifications (`foundation.yaml`, `network-config.yaml`, `storage-infrastructure.yaml`, `monitoring-alerting.yaml`, etc.).
 5. **Private by Default**: Workload instances operate without public IP addresses, using Identity-Aware Proxy (IAP) for administrative SSH access and Cloud NAT for outbound internet.
 6. **Keyless CI/CD**: Eliminates long-lived service account JSON keys by using Workload Identity Federation with short-lived tokens from GitHub Actions.
 7. **Continuous Supply Chain Verification**: Container images deployed to GKE require cryptographic attestation signatures via Grafeas Container Analysis and Binary Authorization.
 8. **Modern Direct VPC Egress**: Cloud Run services and jobs communicate directly with private VPC workloads without legacy, expensive Serverless VPC Access connectors.
 9. **Zero Node Ops Container Platform**: GKE Autopilot offloads 100% of node maintenance, OS patching, and capacity planning to Google while enforcing security baselines.
+10. **Proactive Observability & Incident Dispatch**: Automated alerting on CIS benchmark violations (controls 2.4–2.12), multi-region synthetic uptime probing, and SSL certificate expiration tracking (< 30 days).
 
 ---
 
